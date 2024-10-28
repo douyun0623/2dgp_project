@@ -9,7 +9,17 @@
   + 무기 조합: 다양한 무기를 조합하여 전투 전략을 세울 수 있음.
 
 + 예상 게임 실행 흐름
+  + 적과의 전투
+  
   ![gameplay](https://github.com/user-attachments/assets/60651abb-191f-43cd-a80d-b7b3b1d6a31f)
+
+  + 현재까지의 진행상황과 앞으로 갈 수 있는 위치를 보여주는 맵
+  
+  ![gameplay2](https://github.com/user-attachments/assets/135857a1-81c5-485b-83f8-822699400e2c)
+
+  + 보스와의 전투
+  
+  ![boss](https://github.com/user-attachments/assets/ef60b486-2f95-4744-92ee-47afa6e5b2f5)
 
 
 + 개발 내용
@@ -46,18 +56,19 @@
   + Enemy: 적 캐릭터의 AI 및 행동 패턴.
     + 메서드: draw(), update(), attack()
 
-
   + Boss: 보스 캐릭터의 AI 및 특별 공격 패턴.
     + 메서드: draw(), update(), special_attack()
-
 
   + Item: 아이템의 속성과 효과 정의.
     + 메서드: draw(), use()
 
-
   + Dungeon: 던전의 구조 및 생성 알고리즘.
     + 메서드: generate(), draw()
 
++ 키보드 입력 처리
+  + wasd : 캐릭터 이동
+  + space : 구르기
+  + j : 바라보는 방향으로 무기 공격 실행
     
 + 개발 기법
   + 랜덤 맵 생성: 던전을 랜덤하게 생성하는 알고리즘.
