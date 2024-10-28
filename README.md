@@ -95,7 +95,7 @@
 
 
 + 1차 발표 영상
-  + YouTube link  <https://youtu.be/gry7SMEjkL8>
+  + YouTube link  <https://youtu.be/g1rNgFInx-0>
 
 + 1차 발표 전까지의 활동 정리
   + 게임 컨셉 확정
