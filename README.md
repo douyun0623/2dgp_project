@@ -92,7 +92,7 @@
 
 
 + 진행 상황 업데이트
-
+  메인 캐릭터 이미지, 배경 이미지 수집
 
 + 1차 발표 영상
   + YouTube link  <https://youtu.be/zMZsBIEwkS4>
