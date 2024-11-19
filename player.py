@@ -23,21 +23,31 @@ STATE_RUNNING, STATE_JUMP, STATE_DOUBLE_JUMP, STATE_SLIDE, STATE_FALLING, STATE_
 
 types = {}
 
-def build_states(info):
-    global types
-    states = []
-    if not types:
-        import json
-        with open('res/cookie_types.json', 'r') as f:
-            types = json.load(f)
-    type = types[info["type"]] if info["type"] in types else types["11x6"]
-    for st in type["states"]:
-        rects = make_rects(info["size"], st["rect"])
-        states.append((rects, st["size"]))
-    # print(states)
-    return states
+class KnightType:
+    def __init__(self, knight_id, name, knight_type, size):
+        self.id = knight_id
+        self.name = name
+        self.type = knight_type
+        self.size = size
 
-class Cookie(SheetSprite):
+    def __repr__(self):
+        return f"{self.name} ({self.type})"
+
+
+# Knight 타입을 객체로 정의
+def build_states(info):
+    knight_types = [
+        KnightType("1", "Bandit Knight", "15x8", 366),
+        #KnightType("107573", "Mage Knight", "Spellcaster", 280)
+    ]
+    
+    for knight in knight_types:
+        if knight.id == info["id"]:
+            return knight
+    return None
+
+
+class Knight(SheetSprite):
     GRAVITY = 3000
     JUMP_POWER = 1000
     HURT_DURATION = 0.5

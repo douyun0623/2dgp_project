@@ -1,6 +1,6 @@
 from pico2d import *
 from gfw import *
-#from player import Knight
+from player import Knight
 #import floor
 #import pause_scene
 
@@ -11,10 +11,10 @@ canvas_height = 648 #720
 shows_bounding_box = True
 shows_object_count = True
 
-cookie_info = {
+knight_info = {
     "id": "107572",
     "name": "Coffee Cookie",
-    "type": "13x6",
+    "type": "13x6", 
     "size": 320
 }
 
@@ -28,9 +28,9 @@ def enter():
    # floor.init()
    	#world.append(floor, world.layer.controller)
 
-    #global Knight
-    #Knight = Knight(cookie_info)
-    #world.append(Knight, world.layer.player)
+    global Knight
+    Knight = Knight(knight_info)
+    world.append(Knight, world.layer.player)
 
 def exit():
     music.stop()
