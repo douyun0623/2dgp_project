@@ -12,10 +12,10 @@ shows_bounding_box = True
 shows_object_count = True
 
 knight_info = {
-    "id": "107572",
-    "name": "Coffee Cookie",
-    "type": "13x6", 
-    "size": 320
+    "id": "1",
+    "name": "Bandit Knight",
+    "type": "15x8", 
+    "size": 366
 }
 
 def enter():
@@ -57,4 +57,3 @@ def handle_event(e):
 
 if __name__ == '__main__':
     gfw.start_main_module()
-
