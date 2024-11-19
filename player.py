@@ -4,7 +4,8 @@ import time
 
 def make_rect(size, idx):
     x, y = idx % 100, idx // 100
-    return (x * (size + 2) + 2, y * (size + 2) + 2, size, size)
+    #return (x * (size + 2) + 2, y * (size + 2) + 2, size, size)
+    return (x * (size), y * (size ), size, size)
 
 def make_rects(size, idxs):
     return list(map(lambda idx: make_rect(size, idx), idxs))
@@ -15,13 +16,14 @@ STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(3)
 types = {
     "15x8": {
         "states": [
-            {"rect": [0, 1, 2, 3, 4, 5, 6], "size": [200, 210]},  # 0행 0~6
-            {"rect": [100, 101], "size": [160, 180]},  # 1행 14, 15 -> (100, 101)
-            {"rect": [200, 201, 202], "size": [250, 240]},  # 2행 16~18 -> (200, 201, 202)
+            {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [200, 200]},  # 0행 0~6
+            {"rect": [600, 601, 602, 603], "size": [120, 136]},  # 1행 14, 15 -> (100, 101)
+            {"rect": [400], "size":  [110,126]},  # 2행 16~18 -> (200, 201, 202)
         ]
     }
 
 }
+
 
 # Knight 타입을 객체로 정의
 def build_states(info):
@@ -34,7 +36,6 @@ def build_states(info):
 
 
 class Knight(SheetSprite):
-    JUMP_POWER = 1000
     HURT_DURATION = 0.5
 
     def __init__(self, info):
@@ -56,6 +57,10 @@ class Knight(SheetSprite):
                 self.slide(True)
             elif e.key == SDLK_d:
                 self.toggle_mag()
+            elif e.key == SDLK_j:
+                self.set_state(STATE_ROLLING)
+
+        print(e.key)
 
     def update(self):
         if self.state == STATE_HURT:
@@ -63,13 +68,9 @@ class Knight(SheetSprite):
             if self.time >= Knight.HURT_DURATION:
                 self.set_state(STATE_RUNNING)
 
-        elif self.state == STATE_ROLLING:
-            self.dy -= self.GRAVITY * gfw.frame_time
-            self.y += self.dy * gfw.frame_time
-
-        elif self.state == STATE_RUNNING:
+        elif self.state in (STATE_RUNNING,STATE_ROLLING):
             # no floor detection, just check for falling
-            self.set_state(STATE_RUNNING)
+            #self.set_state(STATE_ROLLING)  # STATE_HURT, STATE_ROLLING,STATE_RUNNING
             self.dy = 0
 
     def hurt(self):

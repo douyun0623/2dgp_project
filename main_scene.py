@@ -25,15 +25,12 @@ def enter():
     world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bg)
     world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bg)
 
-   # floor.init()
-   	#world.append(floor, world.layer.controller)
-
-    global Knight
-    Knight = Knight(knight_info)
+    global knight
+    knight = Knight(knight_info)
     world.append(Knight, world.layer.player)
 
 def exit():
-    music.stop()
+    #music.stop()
     world.clear()
 
 def pause():
@@ -53,7 +50,8 @@ def handle_event(e):
         gfw.push(pause_scene)
         return True
 
-    #cookie.handle_event(e)
+    #knight.handle_event(e)
 
+    
 if __name__ == '__main__':
     gfw.start_main_module()
