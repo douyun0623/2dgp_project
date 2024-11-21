@@ -4,8 +4,7 @@ import time
 
 def make_rect(size, idx):
     x, y = idx % 100, idx // 100
-    #return (x * (size + 2) + 2, y * (size + 2) + 2, size, size)
-    return (x * (size), y * (size ), size, size)
+    return (x * (size ) , y * (size ), size, size)
 
 def make_rects(size, idxs):
     return list(map(lambda idx: make_rect(size, idx), idxs))
@@ -16,14 +15,13 @@ STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(3)
 types = {
     "15x8": {
         "states": [
-            {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [200, 200]},  # 0행 0~6
-            {"rect": [600, 601, 602, 603], "size": [120, 136]},  # 1행 14, 15 -> (100, 101)
-            {"rect": [400], "size":  [110,126]},  # 2행 16~18 -> (200, 201, 202)
+            {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [200, 210]},  # 0행 0~6
+            {"rect": [600, 601, 602, 603], "size": [160, 180]},  # 1행 14, 15 -> (100, 101)
+            {"rect": [400], "size": [250, 240]},  # 2행 16~18 -> (200, 201, 202)
         ]
     }
 
 }
-
 
 # Knight 타입을 객체로 정의
 def build_states(info):
@@ -36,31 +34,41 @@ def build_states(info):
 
 
 class Knight(SheetSprite):
+    JUMP_POWER = 1000
     HURT_DURATION = 0.5
+    ROLLING_DURATION = 0.6
+    MOVE_SPEED = 200  # 이동 속도 (픽셀/초)
+    ROLL_SPEED = 400  # 구르기 시 이동 속도 (픽셀/초)
 
     def __init__(self, info):
         super().__init__(f'res/knight_sheet.png', 160, 500, 10)
         self.states = build_states(info)
         self.running = True
         self.width, self.height = info["size"], info["size"]
-        self.mag = 1.0  # 크기 배율을 설정
+        self.mag = 0.8  # 크기 배율을 설정
         self.dy = 0
+        self.time = 0
+        self.flip = True  # 이미지 반전 상태를 저장
+        self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
+        self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
+
         self.set_state(STATE_RUNNING)
 
     def handle_event(self, e):
         if e.type == SDL_KEYDOWN:
-            if e.key == SDLK_w:
-                self.move()
-            elif e.key == SDLK_a:
-                self.move_down_from_floor()
-            elif e.key == SDLK_s:
-                self.slide(True)
-            elif e.key == SDLK_d:
-                self.toggle_mag()
-            elif e.key == SDLK_j:
-                self.set_state(STATE_ROLLING)
+            if e.key in self.key_state:
+                self.key_state[e.key] = True
+            if e.key == SDLK_a:  # 왼쪽 이동: 반전
+                self.flip = False
+            elif e.key == SDLK_d:  # 오른쪽 이동: 정방향
+                self.flip = True
+            if e.key == SDLK_j:  # 구르기 실행
+                self.rolling()
 
-        print(e.key)
+        elif e.type == SDL_KEYUP:
+            if e.key in self.key_state:
+                self.key_state[e.key] = False
+
 
     def update(self):
         if self.state == STATE_HURT:
@@ -68,10 +76,58 @@ class Knight(SheetSprite):
             if self.time >= Knight.HURT_DURATION:
                 self.set_state(STATE_RUNNING)
 
-        elif self.state in (STATE_RUNNING,STATE_ROLLING):
-            # no floor detection, just check for falling
-            #self.set_state(STATE_ROLLING)  # STATE_HURT, STATE_ROLLING,STATE_RUNNING
-            self.dy = 0
+         # 상태가 ROLLING일 때 처리
+        elif self.state == STATE_ROLLING:
+            # 구르기 시 이동
+            self.x += self.roll_dx * gfw.frame_time
+            self.y += self.roll_dy * gfw.frame_time
+
+            # 구르기 애니메이션 종료 처리
+            if self.current_index != self.get_anim_index():
+                self.index += 1
+            self.current_index = self.get_anim_index()
+            if self.index == len(self.src_rects) - 1:  # 마지막 애니메이션 프레임
+                self.set_state(STATE_RUNNING)
+
+        # 상태가 RUNNING일 때 처리
+        elif self.state == STATE_RUNNING:
+
+            # 이동 처리
+            dx, dy = 0, 0
+            if self.key_state[SDLK_w]:  # 위쪽 이동
+                dy += Knight.MOVE_SPEED * gfw.frame_time
+            if self.key_state[SDLK_a]:  # 왼쪽 이동
+                dx -= Knight.MOVE_SPEED * gfw.frame_time
+            if self.key_state[SDLK_s]:  # 아래쪽 이동
+                dy -= Knight.MOVE_SPEED * gfw.frame_time
+            if self.key_state[SDLK_d]:  # 오른쪽 이동
+                dx += Knight.MOVE_SPEED * gfw.frame_time
+
+            self.x += dx
+            self.y += dy
+
+    def rolling(self):
+        self.roll_dx, self.roll_dy = 0, 0
+        if self.key_state[SDLK_w]:
+            self.roll_dy += Knight.ROLL_SPEED
+        if self.key_state[SDLK_a]:
+            self.roll_dx -= Knight.ROLL_SPEED
+        if self.key_state[SDLK_s]:
+            self.roll_dy -= Knight.ROLL_SPEED
+        if self.key_state[SDLK_d]:
+            self.roll_dx += Knight.ROLL_SPEED
+
+        # 반전 상태 설정 (구르기 방향에 따라)
+        if self.roll_dx < 0:
+            self.flip = False   
+        elif self.roll_dx > 0:
+            self.flip = True
+
+
+        self.index = 0
+        self.current_index = self.get_anim_index()
+        self.set_state(STATE_ROLLING)
+
 
     def hurt(self):
         self.time = 0
@@ -88,10 +144,22 @@ class Knight(SheetSprite):
         return (self.x - half_width, foot, self.x + half_width, foot + self.height * self.mag)
 
     def draw(self):
-        index = self.get_anim_index()
-        l, b, w, h = self.src_rects[index]
-        self.image.clip_draw(l, b, w, h, self.x, self.y, self.mag * w, self.mag * h)
-
+        if self.state == STATE_ROLLING:
+            pass
+        else:
+            self.index = self.get_anim_index()
+        l, b, w, h = self.src_rects[self.index]
+        
+        # self.image.clip_draw(l , b , w, h, self.x, self.y, self.mag * w, self.mag * h)
+         # 좌우 반전 여부에 따라 그리기
+        flip_scale = -1 if self.flip else 1
+        self.image.clip_composite_draw(
+            l, b, w, h,  # 클립 영역
+            0,  # 회전 각도
+            'h',  # 축을 기준으로 뒤집기 (h는 수평 반전)
+            self.x, self.y,  # 그려질 위치
+            self.mag * w * flip_scale, self.mag * h  # 크기 (flip_scale로 반전 적용)
+        )
 
 if __name__ == '__main__':
     open_canvas()
