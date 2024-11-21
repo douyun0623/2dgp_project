@@ -3,7 +3,7 @@ from gfw import *
 import time
 
 class Weapon:
-    def __init__(self, owner, fg_fname, attack_speed, range, damage, fps):
+    def __init__(self, owner, fg_fname, attack_speed, range, damage, fps, initX, initY):
         self.owner = owner
         self.attack_speed = attack_speed
         self.range = range
@@ -14,19 +14,21 @@ class Weapon:
         self.image = load_image(fg_fname)
         self.width, self.height = 96, 48
         self.fps = fps
-        self.frame_count = 5  # 총 프레임 수
+        self.frame_count = 0  # 총 프레임 수
         self.current_frame = 0
         self.time_acc = 0
+        self.initX, self.initY = initX, initY
         
         # 위치
-        self.x, self.y = self.owner.x, self.owner.y
+        self.x, self.y = self.owner.x - self.initX, self.owner.y + self.initY
 
     def update(self):
         if self.cooldown > 0:
             self.cooldown -= gfw.frame_time
 
         # 무기 위치를 주인(캐릭터)와 함께 이동
-        self.x, self.y = self.owner.x, self.owner.y
+        self.x, self.y = self.owner.x, self.owner.y + self.initY
+        #self.x, self.y = self.owner.x, self.owner.y,        + self.initX
 
         # 애니메이션 업데이트
         self.time_acc += gfw.frame_time
@@ -42,7 +44,12 @@ class Weapon:
     def draw(self):
         # 현재 프레임에 해당하는 src_rect 계산
         src_x = self.current_frame * self.width
-        self.image.clip_draw(src_x, 0, self.width, self.height, self.x, self.y)
+        flip = 'h' if self.owner.flip == False else ''  # 방향에 따라 뒤집기 설정
+        if self.owner.flip == True:
+            self.x += self.initX
+        else:
+            self.x -= self.initX
+        self.image.clip_composite_draw(src_x, 0, self.width, self.height, 0, flip, self.x, self.y, self.width, self.height)
 
 
 class Bullet:

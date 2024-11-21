@@ -15,9 +15,9 @@ STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(3)
 types = {
     "15x8": {
         "states": [
-            {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [200, 210]},  # 0행 0~6
-            {"rect": [600, 601, 602, 603], "size": [160, 180]},  # 1행 14, 15 -> (100, 101)
-            {"rect": [400], "size": [250, 240]},  # 2행 16~18 -> (200, 201, 202)
+            {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [100, 140]},  # 0행 0~6
+            {"rect": [600, 601, 602, 603], "size": [100, 140]},  # 1행 14, 15 -> (100, 101)
+            {"rect": [400], "size": [100, 140]},  # 2행 16~18 -> (200, 201, 202)
         ]
     }
 
@@ -45,7 +45,7 @@ class Knight(SheetSprite):
         self.states = build_states(info)
         self.running = True
         self.width, self.height = info["size"], info["size"]
-        self.mag = 0.8  # 크기 배율을 설정
+        self.mag = 0.6  # 크기 배율을 설정
         self.dy = 0
         self.time = 0
         self.flip = True  # 이미지 반전 상태를 저장
