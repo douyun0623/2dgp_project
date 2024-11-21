@@ -53,7 +53,7 @@ def handle_event(e):
         gfw.push(pause_scene)
         return True
 
-    #cookie.handle_event(e)
+    Knight.handle_event(e)
 
 if __name__ == '__main__':
     gfw.start_main_module()

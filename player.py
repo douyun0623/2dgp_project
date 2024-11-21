@@ -4,7 +4,7 @@ import time
 
 def make_rect(size, idx):
     x, y = idx % 100, idx // 100
-    return (x * (size) , y * (size ), size, size)
+    return (x * (size ) , y * (size ), size, size)
 
 def make_rects(size, idxs):
     return list(map(lambda idx: make_rect(size, idx), idxs))
