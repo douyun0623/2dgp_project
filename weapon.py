@@ -9,29 +9,6 @@ def make_rect(size, idx):
 def make_rects(size, idxs):
     return list(map(lambda idx: make_rect(size, idx), idxs))
 
-STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(3)
-
-# JSON 대신 하드코딩된 데이터
-types = {
-    "15x8": {
-        "states": [
-            {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [200, 210]},  # 0행 0~6
-            {"rect": [600, 601, 602, 603], "size": [160, 180]},  # 1행 14, 15 -> (100, 101)
-            {"rect": [400], "size": [250, 240]},  # 2행 16~18 -> (200, 201, 202)
-        ]
-    }
-
-}
-
-# Knight 타입을 객체로 정의
-def build_states(info):
-    states = []
-    type = types[info["type"]] if info["type"] in types else types["11x6"]
-    for st in type["states"]:
-        rects = make_rects(info["size"], st["rect"])
-        states.append((rects, st["size"]))
-    return states
-
 
 class Knight(SheetSprite):
     JUMP_POWER = 1000
@@ -41,7 +18,7 @@ class Knight(SheetSprite):
     ROLL_SPEED = 400  # 구르기 시 이동 속도 (픽셀/초)
 
     def __init__(self, info):
-        super().__init__(f'res/knight_sheet.png', 80, 150, 10) #160, 500
+        super().__init__(f'res/gun/AK47_Sprite.png', 160, 500, 10)
         self.states = build_states(info)
         self.running = True
         self.width, self.height = info["size"], info["size"]
@@ -106,37 +83,6 @@ class Knight(SheetSprite):
             self.x += dx
             self.y += dy
 
-    def rolling(self):
-        self.roll_dx, self.roll_dy = 0, 0
-        if self.key_state[SDLK_w]:
-            self.roll_dy += Knight.ROLL_SPEED
-        if self.key_state[SDLK_a]:
-            self.roll_dx -= Knight.ROLL_SPEED
-        if self.key_state[SDLK_s]:
-            self.roll_dy -= Knight.ROLL_SPEED
-        if self.key_state[SDLK_d]:
-            self.roll_dx += Knight.ROLL_SPEED
-
-        # 반전 상태 설정 (구르기 방향에 따라)
-        if self.roll_dx < 0:
-            self.flip = False   
-        elif self.roll_dx > 0:
-            self.flip = True
-
-
-        self.index = 0
-        self.current_index = self.get_anim_index()
-        self.set_state(STATE_ROLLING)
-
-
-    def hurt(self):
-        self.time = 0
-        self.set_state(STATE_HURT)
-
-    def set_state(self, state):
-        self.state = state
-        self.src_rects, (self.width, self.height) = self.states[self.state]
-        self.frame_count = len(self.src_rects)
 
     def get_bb(self):
         foot = self.y - self.src_rects[0][3] // 2 * self.mag
@@ -163,11 +109,4 @@ class Knight(SheetSprite):
 
 if __name__ == '__main__':
     open_canvas()
-    knight_info = {
-        "id": "1",
-        "name": "Bandit Knight",
-        "type": "15x8",  # The type to use for this knight
-        "size": 366
-    }
-    knight = Knight(knight_info)
     close_canvas()

@@ -1,7 +1,6 @@
 from pico2d import *
 from gfw import *
 from player import Knight
-#import floor
 #import pause_scene
 
 world = World(['bg', 'player']);
@@ -25,15 +24,12 @@ def enter():
     world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bg)
     world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bg)
 
-   # floor.init()
-   	#world.append(floor, world.layer.controller)
 
     global Knight
     Knight = Knight(knight_info)
     world.append(Knight, world.layer.player)
 
 def exit():
-    music.stop()
     world.clear()
 
 def pause():
@@ -50,7 +46,8 @@ def handle_event(e):
         return
 
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
-        gfw.push(pause_scene)
+        return 0
+        #gfw.push(pause_scene)
         return True
 
     Knight.handle_event(e)
