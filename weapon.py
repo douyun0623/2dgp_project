@@ -1,6 +1,6 @@
-# weapon.py
 from pico2d import *
 from gfw import *
+import time
 
 class Weapon:
     def __init__(self, owner, fg_fname, attack_speed, range, damage, fps):
@@ -10,26 +10,39 @@ class Weapon:
         self.damage = damage
         self.cooldown = 0  # 쿨다운 타이머
         
-        # SheetSprite 사용하여 무기 이미지 로드
-        self.weapon_sprite = SheetSprite(fg_fname, self.owner.x, self.owner.y, fps)  # 이미지 로드 및 스프라이트 설정
-        self.weapon_sprite.src_rects = [(i * self.weapon_sprite.width, 0, self.weapon_sprite.width, self.weapon_sprite.height) for i in range(5)]  # 예시로 5 프레임 애니메이션 설정
+        # 무기 이미지 및 애니메이션 설정
+        self.image = load_image(fg_fname)
+        self.width, self.height = 96, 48
+        self.fps = fps
+        self.frame_count = 5  # 총 프레임 수
+        self.current_frame = 0
+        self.time_acc = 0
+        
+        # 위치
+        self.x, self.y = self.owner.x, self.owner.y
 
     def update(self):
         if self.cooldown > 0:
             self.cooldown -= gfw.frame_time
-        self.weapon_sprite.update()  # 애니메이션 업데이트
 
         # 무기 위치를 주인(캐릭터)와 함께 이동
         self.x, self.y = self.owner.x, self.owner.y
-        self.weapon_sprite.x, self.weapon_sprite.y = self.x, self.y
+
+        # 애니메이션 업데이트
+        self.time_acc += gfw.frame_time
+        if self.time_acc >= 1 / self.fps:
+            self.current_frame = (self.current_frame + 1) % self.frame_count
+            self.time_acc -= 1 / self.fps
 
     def attack(self):
         if self.cooldown <= 0:
             print(f"Attack with {self.damage} damage!")
             self.cooldown = 1 / self.attack_speed  # 쿨다운 초기화
-    
+
     def draw(self):
-        self.weapon_sprite.draw()  # 애니메이션 그리기
+        # 현재 프레임에 해당하는 src_rect 계산
+        src_x = self.current_frame * self.width
+        self.image.clip_draw(src_x, 0, self.width, self.height, self.x, self.y)
 
 
 class Bullet:

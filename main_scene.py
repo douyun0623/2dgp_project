@@ -1,9 +1,11 @@
 from pico2d import *
 from gfw import *
 from player import Knight
+from AK47 import AK47
+
 #import pause_scene
 
-world = World(['bg', 'player']);
+world = World(['bg', 'player', 'weapon']);
 
 canvas_width = 1152 #1280
 canvas_height = 648 #720
@@ -28,6 +30,10 @@ def enter():
     global Knight
     Knight = Knight(knight_info)
     world.append(Knight, world.layer.player)
+
+    # 무기 장착
+    ak47 = AK47(Knight)
+    world.append(ak47, world.layer.weapon)
 
 def exit():
     world.clear()
