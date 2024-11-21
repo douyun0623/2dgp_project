@@ -23,6 +23,9 @@ class Weapon:
         # 위치
         self.x, self.y = self.owner.x - self.initX, self.owner.y + self.initY
 
+        # 총알을 관리할 리스트
+        self.bullets = []  # 총알 리스트
+
     def update(self):
         if self.cooldown > 0:
             self.cooldown -= gfw.frame_time
@@ -37,19 +40,36 @@ class Weapon:
                 self.current_frame = (self.current_frame + 1) % self.frame_count
                 self.time_acc -= 1 / self.fps
 
+            # 총알 이미지 생성 및 업데이트
+            # 총알 업데이트
+        for bullet in self.bullets:
+            bullet.update()  # 각 총알의 업데이트 호출
+
     def handle_event(self, event):
         # 특정 키로 무기 활성화
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_k  :  # 스페이스바로 무기 활성화
                 self.active = True
+                self.attack()
+
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_k:
                 self.active = False
 
     def attack(self):
         if self.cooldown <= 0:
+            # 총알 발사
+            self.shoot()
             print(f"Attack with {self.damage} damage!")
             self.cooldown = 1 / self.attack_speed  # 쿨다운 초기화
+
+    def shoot(self):
+        # 총알의 방향을 설정합니다.
+        direction = 1 if self.owner.flip else -1  # 플레이어가 오른쪽을 보면 오른쪽으로, 왼쪽을 보면 왼쪽으로
+
+         # 총알을 생성하고, 총알 리스트에 추가합니다.
+        bullet = Bullet(self.x, self.y, direction, self.range, self.damage, 'res/gun/AK47_Bullet.png', 16, 16)
+        self.bullets.append(bullet)  # 총알을 리스트에 추가
 
     def draw(self):
         # 현재 프레임에 해당하는 src_rect 계산
@@ -61,22 +81,26 @@ class Weapon:
             self.x -= self.initX
         self.image.clip_composite_draw(src_x, 0, self.width, self.height, 0, flip, self.x, self.y, self.width, self.height)
 
+        # 총알을 화면에 그리기
+        for bullet in self.bullets:
+            bullet.draw()  # 각 총알의 draw 메소드를 호출하여 화면에 그리기
 
 class Bullet:
-    def __init__(self, x, y, range, damage, direction):
+    def __init__(self, x, y, direction, range, damage, fg_fname, width, height):
         self.x, self.y = x, y
         self.range = range
         self.damage = damage
-        self.speed = 500
-        self.direction = 1 if direction else -1
-        self.distance_traveled = 0
-        self.image = load_image('res/bullet.png')
+        self.speed = 500  # 총알 속도
+        self.direction = direction  # 1이면 오른쪽, -1이면 왼쪽
+        self.distance_traveled = 0  # 이동한 거리
+        self.width, self.height = width, height  # width와 height로 수정
+        self.image = load_image(fg_fname)  # 총알 이미지 로드
 
     def update(self):
-        self.x += self.speed * gfw.frame_time * self.direction
+        # 총알이 이동하는 코드
+        self.x += self.speed * gfw.frame_time * self.direction  # 방향에 따라 x축 이동
         self.distance_traveled += self.speed * gfw.frame_time
-        if self.distance_traveled >= self.range:
-            gfw.world.remove(self)
 
     def draw(self):
-        self.image.draw(self.x, self.y)
+        # 총알을 화면에 그리는 코드
+        self.image.clip_composite_draw(0, 0, self.width, self.height, 0, '', self.x, self.y, self.width, self.height)
