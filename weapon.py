@@ -17,6 +17,7 @@ class Weapon:
         self.frame_count = 0  # 총 프레임 수
         self.current_frame = 0
         self.time_acc = 0
+        self.active = False
         self.initX, self.initY = initX, initY
         
         # 위치
@@ -28,13 +29,22 @@ class Weapon:
 
         # 무기 위치를 주인(캐릭터)와 함께 이동
         self.x, self.y = self.owner.x, self.owner.y + self.initY
-        #self.x, self.y = self.owner.x, self.owner.y,        + self.initX
 
         # 애니메이션 업데이트
-        self.time_acc += gfw.frame_time
-        if self.time_acc >= 1 / self.fps:
-            self.current_frame = (self.current_frame + 1) % self.frame_count
-            self.time_acc -= 1 / self.fps
+        if self.active == True:
+            self.time_acc += gfw.frame_time
+            if self.time_acc >= 1 / self.fps:
+                self.current_frame = (self.current_frame + 1) % self.frame_count
+                self.time_acc -= 1 / self.fps
+
+    def handle_event(self, event):
+        # 특정 키로 무기 활성화
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_k  :  # 스페이스바로 무기 활성화
+                self.active = True
+        elif event.type == SDL_KEYUP:
+            if event.key == SDLK_k:
+                self.active = False
 
     def attack(self):
         if self.cooldown <= 0:

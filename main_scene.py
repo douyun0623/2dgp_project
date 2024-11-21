@@ -32,6 +32,7 @@ def enter():
     world.append(Knight, world.layer.player)
 
     # 무기 장착
+    global ak47
     ak47 = AK47(Knight)
     world.append(ak47, world.layer.weapon)
 
@@ -57,6 +58,7 @@ def handle_event(e):
         return True
 
     Knight.handle_event(e)
+    ak47.handle_event(e)
 
 if __name__ == '__main__':
     gfw.start_main_module()
