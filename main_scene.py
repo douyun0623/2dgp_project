@@ -36,6 +36,10 @@ def enter():
     ak47 = AK47(Knight)
     world.append(ak47, world.layer.weapon)
 
+    k = load_image(f'res/gun/AK47_Sprite.png')
+    print(k.h)
+
+
 def exit():
     world.clear()
 
