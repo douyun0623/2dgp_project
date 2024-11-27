@@ -20,11 +20,16 @@ knight_info = {
 }
 
 def enter():
-    world.append(HorzFillBackground('res/Plan5.png', 0), world.layer.bg)
-    world.append(HorzFillBackground('res/Plan4.png', 0), world.layer.bg)
-    world.append(HorzFillBackground('res/Plan3.png', 0), world.layer.bg)
-    world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bg)
-    world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bg)
+    
+    # world.append(HorzFillBackground('res/Plan5.png', 0), world.layer.bg)
+    # world.append(HorzFillBackground('res/Plan4.png', 0), world.layer.bg)
+    # world.append(HorzFillBackground('res/Plan3.png', 0), world.layer.bg)
+    # world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bg)
+    # world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bg)
+    world.bg = MapBackground('res/map/floor1.tmj', tilesize=32)
+    world.bg.margin = 100
+    world.bg.set_collision_tiles({1})
+    world.append(world.bg, world.layer.bg)
 
 
     global Knight

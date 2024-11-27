@@ -192,8 +192,17 @@
  "tileheight":32,
  "tilesets":[
         {
+         "columns":20,
          "firstgid":1,
-         "source":"snow.tsx"
+         "image":"snow.png",
+         "imageheight":288,
+         "imagewidth":640,
+         "margin":0,
+         "name":"snow",
+         "spacing":0,
+         "tilecount":180,
+         "tileheight":32,
+         "tilewidth":32
         }],
  "tilewidth":32,
  "type":"map",
