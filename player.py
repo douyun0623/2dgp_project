@@ -40,8 +40,9 @@ class Knight(SheetSprite):
     MOVE_SPEED = 200  # 이동 속도 (픽셀/초)
     ROLL_SPEED = 400  # 구르기 시 이동 속도 (픽셀/초)
 
-    def __init__(self, info):
+    def __init__(self, info, bg):
         super().__init__(f'res/knight_sheet.png', 80, 150, 10) #160, 500
+        self.bg = bg
         self.states = build_states(info)
         self.running = True
         self.width, self.height = info["size"], info["size"]
@@ -106,6 +107,12 @@ class Knight(SheetSprite):
             self.x += dx
             self.y += dy
 
+        # 배경과 연동: 캐릭터 좌표를 화면 좌표로 변환
+        self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
+        self.y = clamp(self.bg.margin, self.y, self.bg.total_height() - self.bg.margin)
+        screen_pos = self.bg.to_screen(self.x, self.y)
+        self.bg.show(self.x, self.y)
+
     def rolling(self):
         self.roll_dx, self.roll_dy = 0, 0
         if self.key_state[SDLK_w]:
@@ -151,15 +158,20 @@ class Knight(SheetSprite):
         l, b, w, h = self.src_rects[self.index]
         
         # self.image.clip_draw(l , b , w, h, self.x, self.y, self.mag * w, self.mag * h)
-         # 좌우 반전 여부에 따라 그리기
+        
+        # 좌표를 배경의 스크린 좌표로 변환하여 사용
+        screen_pos = self.bg.to_screen(self.x, self.y)
+
+        # 좌우 반전 여부에 따라 그리기
         flip_scale = -1 if self.flip else 1
+
         self.image.clip_composite_draw(
             l, b, w, h,  # 클립 영역
             0,  # 회전 각도
             'h',  # 축을 기준으로 뒤집기 (h는 수평 반전)
-            self.x, self.y,  # 그려질 위치
+            *screen_pos,  # 그려질 위치
             self.mag * w * flip_scale, self.mag * h  # 크기 (flip_scale로 반전 적용)
-        )
+        )   
 
 if __name__ == '__main__':
     open_canvas()

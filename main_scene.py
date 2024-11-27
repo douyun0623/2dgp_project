@@ -33,7 +33,7 @@ def enter():
 
 
     global Knight
-    Knight = Knight(knight_info)
+    Knight = Knight(knight_info, world.bg)
     world.append(Knight, world.layer.player)
 
     # 무기 장착
