@@ -53,6 +53,11 @@ class Knight(SheetSprite):
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
+        # 월드 좌표 상에서 캐릭터의 시작 위치를 설정 (배경 맵의 중앙 또는 원하는 위치)
+        self.x = 1281  # 맵의 중앙에 캐릭터 위치
+        self.y = 100  # 맵의 중앙에 캐릭터 위치
+       
+
         self.set_state(STATE_RUNNING)
 
     def handle_event(self, e):
@@ -161,6 +166,10 @@ class Knight(SheetSprite):
         
         # 좌표를 배경의 스크린 좌표로 변환하여 사용
         screen_pos = self.bg.to_screen(self.x, self.y)
+
+        # 좌표 출력
+        # print(f"World Position: (x: {self.x}, y: {self.y})")
+        # print(f"Screen Position: {screen_pos}")
 
         # 좌우 반전 여부에 따라 그리기
         flip_scale = -1 if self.flip else 1

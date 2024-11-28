@@ -30,7 +30,10 @@ def enter():
     world.bg.margin = 100
     world.bg.set_collision_tiles({1})
     world.append(world.bg, world.layer.bg)
+    world.bg.x = 750  # 배경을 캐릭터의 위치에 맞춰 이동
 
+    print(f"world.bg.width: {world.bg.width}")
+    print(f"world.bg.height: {world.bg.height}")
 
     global Knight
     Knight = Knight(knight_info, world.bg)
