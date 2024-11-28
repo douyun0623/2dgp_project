@@ -5,7 +5,7 @@ from AK47 import AK47
 
 #import pause_scene
 
-world = World(['bg', 'player', 'weapon']);
+world = World(['bgi', 'bg', 'player', 'weapon']);
 
 canvas_width = 1152 #1280
 canvas_height = 648 #720
@@ -21,11 +21,12 @@ knight_info = {
 
 def enter():
     
-    # world.append(HorzFillBackground('res/Plan5.png', 0), world.layer.bg)
-    # world.append(HorzFillBackground('res/Plan4.png', 0), world.layer.bg)
-    # world.append(HorzFillBackground('res/Plan3.png', 0), world.layer.bg)
-    # world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bg)
-    # world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bg)
+    world.append(HorzFillBackground('res/Plan5.png', 0), world.layer.bgi)
+    world.append(HorzFillBackground('res/Plan4.png', 0), world.layer.bgi)
+    world.append(HorzFillBackground('res/Plan3.png', 0), world.layer.bgi)
+    world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bgi)
+    world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bgi)
+    
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=32)
     world.bg.margin = 100
     world.bg.set_collision_tiles({2})
