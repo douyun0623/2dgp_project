@@ -53,7 +53,7 @@ class Knight(SheetSprite):
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
-        # 월드 좌표 상에서 캐릭터의 시작 위치를 설정 (배경 맵의 중앙 또는 원하는 위치)
+        self.bg.x = 750
         self.x = 1281  # 맵의 중앙에 캐릭터 위치
         self.y = 100  # 맵의 중앙에 캐릭터 위치
        
@@ -77,6 +77,9 @@ class Knight(SheetSprite):
 
 
     def update(self):
+
+        ox, oy = self.x, self.y
+
         if self.state == STATE_HURT:
             self.time += gfw.frame_time
             if self.time >= Knight.HURT_DURATION:
@@ -111,6 +114,9 @@ class Knight(SheetSprite):
 
             self.x += dx
             self.y += dy
+
+        if self.bg.collides_box(*self.get_bb()):
+            self.x, self.y = ox, oy
 
         # 배경과 연동: 캐릭터 좌표를 화면 좌표로 변환
         self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
