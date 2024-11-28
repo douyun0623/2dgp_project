@@ -72,7 +72,7 @@ class Weapon:
         direction = 1 if self.owner.flip else -1  # 플레이어가 오른쪽을 보면 오른쪽으로, 왼쪽을 보면 왼쪽으로
 
         # 총알을 생성하고, 총알 리스트에 추가합니다.
-        bullet = Bullet(self.x, self.y, direction, self.range, self.damage, 'res/gun/AK47_Bullet.png', 16, 16, 15)
+        bullet = Bullet(self.x, self.y, self.owner, direction, self.range, self.damage, 'res/gun/AK47_Bullet.png', 16, 16, 15)
         self.bullets.append(bullet)  # 총알을 리스트에 추가
 
     def draw(self):
@@ -83,7 +83,9 @@ class Weapon:
             self.x += self.initX
         else:
             self.x -= self.initX
-        self.image.clip_composite_draw(src_x, 0, self.width, self.height, 0, flip, self.x, self.y, self.width, self.height)
+
+        screen_pos = self.owner.bg.to_screen(self.x, self.y)
+        self.image.clip_composite_draw(src_x, 0, self.width, self.height, 0, flip, *screen_pos, self.width, self.height)
 
         # 총알을 화면에 그리기
         for bullet in self.bullets:
@@ -91,9 +93,10 @@ class Weapon:
 
 
 class Bullet:
-    def __init__(self, x, y, direction, range, damage, fg_fname, width, height, initY):
+    def __init__(self, x, y,owner, direction, range, damage, fg_fname, width, height, initY):
         self.x, self.y = x, y + initY
         self.range = range
+        self.owner = owner
         self.damage = damage
         self.speed = 500  # 총알 속도
         self.mag = 2  # 크기 배율을 설정
@@ -109,4 +112,5 @@ class Bullet:
 
     def draw(self):
         # 총알을 화면에 그리는 코드
-        self.image.clip_composite_draw(0, 0, self.width, self.height, 0, '', self.x, self.y, self.width * self.mag, self.height * self.mag)
+        screen_pos = self.owner.bg.to_screen(self.x, self.y)
+        self.image.clip_composite_draw(0, 0, self.width, self.height, 0, '', *screen_pos, self.width * self.mag, self.height * self.mag)
