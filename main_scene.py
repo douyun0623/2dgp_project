@@ -7,8 +7,8 @@ from AK47 import AK47
 
 world = World(['bgi', 'bg', 'player', 'weapon']);
 
-canvas_width = 1152 #1280
-canvas_height = 648 #720
+canvas_width = 1152  # 1280
+canvas_height = 648  # 720
 shows_bounding_box = True
 shows_object_count = True
 
@@ -28,7 +28,7 @@ def enter():
     world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bgi)
     
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=32)
-    world.bg.margin = 100
+    world.bg.margin = 200
     world.bg.set_collision_tiles({2})
     world.append(world.bg, world.layer.bg)
 

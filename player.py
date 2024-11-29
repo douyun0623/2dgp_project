@@ -55,7 +55,7 @@ class Knight(SheetSprite):
 
         self.bg.x = 750
         self.x = 1281  # 맵의 중앙에 캐릭터 위치
-        self.y = 100  # 맵의 중앙에 캐릭터 위치
+        self.y = 100
        
 
         self.set_state(STATE_RUNNING)
@@ -118,10 +118,9 @@ class Knight(SheetSprite):
         if self.bg.collides_box(*self.get_bb()):
             self.x, self.y = ox, oy
 
-        # 배경과 연동: 캐릭터 좌표를 화면 좌표로 변환
+        # 배경과 연동: 캐릭터 좌표를 map 좌표로 변환
         self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
         self.y = clamp(self.bg.margin, self.y, self.bg.total_height() - self.bg.margin)
-        screen_pos = self.bg.to_screen(self.x, self.y)
         self.bg.show(self.x, self.y)
 
     def rolling(self):

@@ -262,6 +262,7 @@ class MapBackground(InfiniteScrollBackground):
             tiles = self.collision_tiles
         map_total_width = self.total_width()
         map_total_height = self.total_height()
+        
         bottom = bottom // self.tilesize * self.tilesize
         left = left // self.tilesize * self.tilesize
         start_left, start_botm = round(left), round(bottom)
