@@ -53,9 +53,9 @@ class Knight(SheetSprite):
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
-        self.bg.x = 750
-        self.x = 1281  # 맵의 중앙에 캐릭터 위치
-        self.y = 100
+        
+        self.x = 2000  # 맵의 중앙에 캐릭터 위치
+        self.y = 0
        
 
         self.set_state(STATE_RUNNING)
@@ -118,10 +118,21 @@ class Knight(SheetSprite):
         if self.bg.collides_box(*self.get_bb()):
             self.x, self.y = ox, oy
 
-        # 배경과 연동: 캐릭터 좌표를 map 좌표로 변환
-        self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
+        # # 배경과 연동: 캐릭터 좌표를 map 좌로 변환
+        # self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
         self.y = clamp(self.bg.margin, self.y, self.bg.total_height() - self.bg.margin)
-        self.bg.show(self.x, self.y)
+        # self.bg.show(self.x, self.y)
+
+        # 배경과 연동: 캐릭터 좌표를 화면 좌표로 변환하여 항상 화면 중앙에 위치하도록 조정
+        # screen_center_x = self.bg.width // 2  # 화면 중앙 X 좌표
+        # screen_center_y = self.bg.height // 2  # 화면 중앙 Y 좌표
+
+        # 화면 중앙에 주인공을 맞추기 위해 bg.x와 bg.y를 조정
+        self.bg.x = self.x - self.bg.width // 2 - 400 
+        self.bg.y = self.y - 200
+
+        # 배경을 화면에 그리기
+        self.bg.show(self.bg.x, self.bg.y)
 
     def rolling(self):
         self.roll_dx, self.roll_dy = 0, 0

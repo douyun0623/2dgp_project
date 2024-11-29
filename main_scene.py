@@ -27,11 +27,12 @@ def enter():
     world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bgi)
     world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bgi)
     
-    world.bg = MapBackground('res/map/floor1.tmj', tilesize=32)
-    world.bg.margin = 200
+    world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
+    world.bg.margin = 210
+    world.bg.x = 1400
     world.bg.set_collision_tiles({2})
     world.append(world.bg, world.layer.bg)
-
+    # print(world.bg.)
     global Knight
     Knight = Knight(knight_info, world.bg)
     world.append(Knight, world.layer.player)
