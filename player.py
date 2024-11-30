@@ -11,7 +11,8 @@ def make_rects(size, idxs):
 
 STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(3)
 
-# JSON 대신 하드코딩된 데이터
+IS_STAGE_ENTERING, IS_STAGE_ACTIVE, IS_STAGE_COMPLETE = range(3)
+
 types = {
     "15x8": {
         "states": [
@@ -22,6 +23,16 @@ types = {
     }
 
 }
+
+# 구역 정보 (좌표 범위 및 상태)
+zones = {
+    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING},
+    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING},
+    'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING},
+    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING},
+    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING}
+}
+
 
 # Knight 타입을 객체로 정의
 def build_states(info):
@@ -53,7 +64,7 @@ class Knight(SheetSprite):
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
-        
+
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
         self.y = 0
        
@@ -70,6 +81,8 @@ class Knight(SheetSprite):
                 self.flip = True
             if e.key == SDLK_j:  # 구르기 실행
                 self.rolling()
+            if e.key == SDLK_c:  # 모든 벽 이동할 수 있도록 함
+                self.bg.set_collision_tiles({})
 
         elif e.type == SDL_KEYUP:
             if e.key in self.key_state:
@@ -117,6 +130,23 @@ class Knight(SheetSprite):
 
         if self.bg.collides_box(*self.get_bb()):
             self.x, self.y = ox, oy
+
+
+        # 캐릭터의 위치가 각 구역의 범위 안에 있는지 확인
+        for zone_name, zone_data in zones.items():
+            (left, bottom), (right, top) = zone_data['range']
+            
+            # 캐릭터가 구역의 범위 내에 있는지 확인
+            if left <= self.x <= right and bottom <= self.y <= top:
+                if zone_data['status'] == IS_STAGE_ENTERING:
+                    zone_data['status'] = IS_STAGE_ACTIVE  # 상태를 '진행 중'으로 변경
+                    print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
+                    # self.bg.set_collision_tiles({2,43})
+                elif zone_data['status'] == IS_STAGE_ACTIVE:
+                    print(f"{zone_name}은 이미 진행 중입니다.")
+                elif zone_data['status'] == IS_STAGE_COMPLETE:
+                    print(f"{zone_name}은 이미 완료되었습니다.")
+
 
         # # 배경과 연동: 캐릭터 좌표를 map 좌로 변환
         # self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
@@ -184,7 +214,7 @@ class Knight(SheetSprite):
         screen_pos = self.bg.to_screen(self.x, self.y)
 
         # 좌표 출력
-        # print(f"World Position: (x: {self.x}, y: {self.y})")
+        print(f"World Position: (x: {self.x}, y: {self.y})")
         # print(f"Screen Position: {screen_pos}")
 
         # 좌우 반전 여부에 따라 그리기
