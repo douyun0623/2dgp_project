@@ -125,15 +125,26 @@ class Demon(AnimSprite):
 
 
     def get_bb(self):
+        # 기존 bbox에서 오프셋 값 가져오기
+        l, b, r, t = self.info.bbox
+        if self.flip == 'h':
+            l, r = -r, -l
+
+        # 프레임 크기 계산
         w, h = self.info.frame_info[self.state]['frame_size']
         w, h = w * self.mag, h * self.mag
 
-        if self.flip == 'h':
-            # 중심 좌표를 기준으로 좌측 하단과 우측 상단 계산
-            return self.x - w / 2, self.y - h / 2, self.x + w / 2, self.y + h / 2
-        else:
-            # 중심 좌표를 기준으로 좌측 하단과 우측 상단 계산
-            return self.x - w / 2, self.y - h / 2, self.x + w / 2, self.y + h / 2
+        # 중심 좌표를 기준으로 bbox 적용
+        x_center = self.x
+        y_center = self.y
+
+        # 좌측 하단과 우측 상단 계산 (프레임 크기와 bbox 오프셋 포함)
+        left = x_center - w / 2 - l
+        bottom = y_center - h / 2 - b
+        right = x_center + w / 2 - r
+        top = y_center + h / 2 - t
+
+        return left, bottom, right, top
 
     def is_on_obstacle(self):
         return False
