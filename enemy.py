@@ -16,7 +16,7 @@ class Demon(AnimSprite):
         self.info = info
         self.state = 'idle'  # 'idle' 상태로 초기화
         self.flip = ''
-        self.mag = 1  # 이미지 크기를 1.5배 확대
+        self.mag = 2  # 이미지 크기를 1.5배 확대
         self.max_life = info.life
         self.life = self.max_life
         self.stun_timer = 0
@@ -125,10 +125,15 @@ class Demon(AnimSprite):
 
 
     def get_bb(self):
-        l, b, r, t = self.info.bbox
+        w, h = self.info.frame_info[self.state]['frame_size']
+        w, h = w * self.mag, h * self.mag
+
         if self.flip == 'h':
-            l,r = -r,-l
-        return self.x+l, self.y+b, self.x+r, self.y+t
+            # 중심 좌표를 기준으로 좌측 하단과 우측 상단 계산
+            return self.x - w / 2, self.y - h / 2, self.x + w / 2, self.y + h / 2
+        else:
+            # 중심 좌표를 기준으로 좌측 하단과 우측 상단 계산
+            return self.x - w / 2, self.y - h / 2, self.x + w / 2, self.y + h / 2
 
     def is_on_obstacle(self):
         return False
