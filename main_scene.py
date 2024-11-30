@@ -1,11 +1,12 @@
 from pico2d import *
 from gfw import *
+from enemy import Demon, DemonGen
 from player import Knight
 from AK47 import AK47
 
 #import pause_scene
 
-world = World(['bgi', 'bg', 'player', 'weapon']);
+world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 
 canvas_width = 1152  # 1280
 canvas_height = 648  # 720
@@ -18,6 +19,12 @@ knight_info = {
     "type": "15x8", 
     "size": 366
 }
+
+class CollisionChecker:
+    def draw(self): pass
+    def update(self):
+        for obj in world.objects_at(world.layer.enemy):
+            player.weapon.try_hit(obj)
 
 def enter():
     
@@ -41,6 +48,8 @@ def enter():
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
 
+    world.append(DemonGen(), world.layer.controller)
+    # world.append(CollisionChecker(), world.layer.controller)
 
 def exit():
     world.clear()

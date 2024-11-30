@@ -208,8 +208,6 @@ class Knight(SheetSprite):
             self.index = self.get_anim_index()
         l, b, w, h = self.src_rects[self.index]
         
-        # self.image.clip_draw(l , b , w, h, self.x, self.y, self.mag * w, self.mag * h)
-        
         # 좌표를 배경의 스크린 좌표로 변환하여 사용
         screen_pos = self.bg.to_screen(self.x, self.y)
 
