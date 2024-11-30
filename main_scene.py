@@ -21,12 +21,8 @@ knight_info = {
 
 def enter():
     
-    world.append(HorzFillBackground('res/Plan5.png', 0), world.layer.bgi)
-    world.append(HorzFillBackground('res/Plan4.png', 0), world.layer.bgi)
-    world.append(HorzFillBackground('res/Plan3.png', 0), world.layer.bgi)
-    world.append(HorzFillBackground('res/Plan2.png', 0), world.layer.bgi)
-    world.append(HorzFillBackground('res/Plan1.png', 0), world.layer.bgi)
-    
+    world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
+
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
     world.bg.margin = 210
     world.bg.x = 1400
