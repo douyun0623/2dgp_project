@@ -9,8 +9,6 @@ class AK47(Weapon):
         self.frame_count = 6
 
         # self.cooldown = 0  # 쿨다운 타이머
-        
-        
 
     def attack(self):
         super().attack()  # 부모의 attack 호출

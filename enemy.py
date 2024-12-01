@@ -103,7 +103,7 @@ class Demon(AnimSprite):
 
 
         # 애니메이션 프레임 인덱스를 출력
-        print(f"Drawing {self.state} frame {index}")
+        # print(f"Drawing {self.state} frame {index}")
         
         # 각 프레임의 위치와 크기 정보
         l, b = frame_info['start_pos']
@@ -127,9 +127,7 @@ class Demon(AnimSprite):
         )  
 
         # 좌표를 출력하여 확인
-        print(f"Drawing at position: {self.x}, {self.y}")
-
-        
+        # print(f"Drawing at position: {self.x}, {self.y}")
 
 
     def get_bb(self):
@@ -244,8 +242,7 @@ class DemonGen:
     def update(self):
         world = gfw.top().world
         if world.count_at(world.layer.enemy) >= 10: return
-        type = 2 # random.randrange(len(INFO))
-        # type = 2
+        type = random.randrange(len(INFO))
         x, y = position_somewhere_outside_screen()
         info = INFO[type]
         demon = info.clazz(type, x, y)

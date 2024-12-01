@@ -33,6 +33,36 @@ zones = {
     'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING}
 }
 
+# ZoneManager: 영역 상태 관리
+class ZoneManager:
+    def __init__(self, zones):
+        self.zones = zones
+
+    # for zone_name, zone_data in zones.items():
+        #     (left, bottom), (right, top) = zone_data['range']
+            
+        #     # 캐릭터가 구역의 범위 내에 있는지 확인
+        #     if left <= self.x <= right and bottom <= self.y <= top:
+        #         if zone_data['status'] == IS_STAGE_ENTERING:
+        #             zone_data['status'] = IS_STAGE_ACTIVE  # 상태를 '진행 중'으로 변경
+        #             print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
+        #             # self.bg.set_collision_tiles({2,43})
+        #         elif zone_data['status'] == IS_STAGE_ACTIVE:
+        #             print(f"{zone_name}은 이미 진행 중입니다.")
+        #         elif zone_data['status'] == IS_STAGE_COMPLETE:
+        #             print(f"{zone_name}은 이미 완료되었습니다.")
+
+    def update_zone_status(self, x, y):
+        for zone_name, zone_data in self.zones.items():
+            (left, bottom), (right, top) = zone_data['range']
+            if left <= x <= right and bottom <= y <= top:
+                if zone_data['status'] == IS_STAGE_ENTERING:
+                    zone_data['status'] = IS_STAGE_ACTIVE
+                    print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
+                elif zone_data['status'] == IS_STAGE_ACTIVE:
+                    print(f"{zone_name}은 이미 진행 중입니다.")
+                elif zone_data['status'] == IS_STAGE_COMPLETE:
+                    print(f"{zone_name}은 이미 완료되었습니다.")
 
 # Knight 타입을 객체로 정의
 def build_states(info):
@@ -58,12 +88,13 @@ class Knight(SheetSprite):
         self.running = True
         self.width, self.height = info["size"], info["size"]
         self.mag = 0.6  # 크기 배율을 설정
-        self.dy = 0
         self.time = 0
         self.flip = True  # 이미지 반전 상태를 저장
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
+        # ZoneManager: 구역 상태 관리
+        self.zone_manager = ZoneManager(zones)
 
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
         self.y = 0
@@ -88,9 +119,7 @@ class Knight(SheetSprite):
             if e.key in self.key_state:
                 self.key_state[e.key] = False
 
-
     def update(self):
-
         ox, oy = self.x, self.y
 
         if self.state == STATE_HURT:
@@ -131,31 +160,10 @@ class Knight(SheetSprite):
         if self.bg.collides_box(*self.get_bb()):
             self.x, self.y = ox, oy
 
+        # ZoneManager를 사용해 구역 상태를 관리
+        self.zone_manager.update_zone_status(self.x, self.y)
 
-        # 캐릭터의 위치가 각 구역의 범위 안에 있는지 확인
-        for zone_name, zone_data in zones.items():
-            (left, bottom), (right, top) = zone_data['range']
-            
-            # 캐릭터가 구역의 범위 내에 있는지 확인
-            if left <= self.x <= right and bottom <= self.y <= top:
-                if zone_data['status'] == IS_STAGE_ENTERING:
-                    zone_data['status'] = IS_STAGE_ACTIVE  # 상태를 '진행 중'으로 변경
-                    print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
-                    # self.bg.set_collision_tiles({2,43})
-                elif zone_data['status'] == IS_STAGE_ACTIVE:
-                    print(f"{zone_name}은 이미 진행 중입니다.")
-                elif zone_data['status'] == IS_STAGE_COMPLETE:
-                    print(f"{zone_name}은 이미 완료되었습니다.")
-
-
-        # # 배경과 연동: 캐릭터 좌표를 map 좌로 변환
-        # self.x = clamp(self.bg.margin, self.x, self.bg.total_width() - self.bg.margin)
         self.y = clamp(self.bg.margin, self.y, self.bg.total_height() - self.bg.margin)
-        # self.bg.show(self.x, self.y)
-
-        # 배경과 연동: 캐릭터 좌표를 화면 좌표로 변환하여 항상 화면 중앙에 위치하도록 조정
-        # screen_center_x = self.bg.width // 2  # 화면 중앙 X 좌표
-        # screen_center_y = self.bg.height // 2  # 화면 중앙 Y 좌표
 
         # 화면 중앙에 주인공을 맞추기 위해 bg.x와 bg.y를 조정
         self.bg.x = self.x - self.bg.width // 2 - 400 
@@ -186,7 +194,6 @@ class Knight(SheetSprite):
         self.current_index = self.get_anim_index()
         self.set_state(STATE_ROLLING)
 
-
     def hurt(self):
         self.time = 0
         self.set_state(STATE_HURT)
@@ -212,7 +219,7 @@ class Knight(SheetSprite):
         screen_pos = self.bg.to_screen(self.x, self.y)
 
         # 좌표 출력
-        print(f"World Position: (x: {self.x}, y: {self.y})")
+        # print(f"World Position: (x: {self.x}, y: {self.y})")
         # print(f"Screen Position: {screen_pos}")
 
         # 좌우 반전 여부에 따라 그리기
