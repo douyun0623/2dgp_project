@@ -2,7 +2,6 @@ from pico2d import *
 from gfw import *
 from enemy import Demon, DemonGen
 from player import Knight
-from AK47 import AK47
 
 #import pause_scene
 
@@ -28,7 +27,7 @@ class CollisionChecker:
 
 def enter():
     
-    world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
+    # world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
 
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
     world.bg.margin = 210
@@ -39,11 +38,7 @@ def enter():
     global Knight
     Knight = Knight(knight_info, world.bg)
     world.append(Knight, world.layer.player)
-
-    # 무기 장착
-    global ak47
-    ak47 = AK47(Knight)
-    world.append(ak47, world.layer.weapon)
+    world.append(Knight.weapon, world.layer.weapon)
 
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
@@ -85,7 +80,6 @@ def handle_event(e):
         return True
 
     Knight.handle_event(e)
-    ak47.handle_event(e)
 
 if __name__ == '__main__':
     gfw.start_main_module()

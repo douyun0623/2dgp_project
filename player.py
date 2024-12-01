@@ -1,5 +1,6 @@
 from pico2d import *
 from gfw import *
+from weapon import *
 import time
 
 def make_rect(size, idx):
@@ -94,6 +95,10 @@ class Knight(SheetSprite):
 
         self.set_state(STATE_RUNNING)
 
+        # 무기 추가
+        self.weapon = Weapons(self)
+        self.weapon.append(AK47(self))
+
     def handle_event(self, e):
         if e.type == SDL_KEYDOWN:
             if e.key in self.key_state:
@@ -106,6 +111,8 @@ class Knight(SheetSprite):
                 self.rolling()
             if e.key == SDLK_c:  # 모든 벽 이동할 수 있도록 함
                 self.bg.set_collision_tiles({})
+            if e.key == SDLK_k:  # 'k' 키를 누르면 총알 발사
+                self.weapon.attack()
 
         elif e.type == SDL_KEYUP:
             if e.key in self.key_state:
