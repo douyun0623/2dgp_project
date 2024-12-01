@@ -33,24 +33,26 @@ zones = {
     'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING}
 }
 
+# StatesManager: 관리 및 애니메이션 관리
+class StatesManager:
+    def __init__(self, type_info, size):
+        self.states = self._build_states(type_info, size)
+
+    def _build_states(self, type_info, size):
+        states = []
+        type_data = types[type_info] if type_info in types else types["11x6"]
+        for st in type_data["states"]:
+            rects = make_rects(size, st["rect"])
+            states.append((rects, st["size"]))
+        return states
+
+    def get_state_data(self, state):
+        return self.states[state]
+
 # ZoneManager: 영역 상태 관리
 class ZoneManager:
     def __init__(self, zones):
         self.zones = zones
-
-    # for zone_name, zone_data in zones.items():
-        #     (left, bottom), (right, top) = zone_data['range']
-            
-        #     # 캐릭터가 구역의 범위 내에 있는지 확인
-        #     if left <= self.x <= right and bottom <= self.y <= top:
-        #         if zone_data['status'] == IS_STAGE_ENTERING:
-        #             zone_data['status'] = IS_STAGE_ACTIVE  # 상태를 '진행 중'으로 변경
-        #             print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
-        #             # self.bg.set_collision_tiles({2,43})
-        #         elif zone_data['status'] == IS_STAGE_ACTIVE:
-        #             print(f"{zone_name}은 이미 진행 중입니다.")
-        #         elif zone_data['status'] == IS_STAGE_COMPLETE:
-        #             print(f"{zone_name}은 이미 완료되었습니다.")
 
     def update_zone_status(self, x, y):
         for zone_name, zone_data in self.zones.items():
@@ -64,16 +66,6 @@ class ZoneManager:
                 elif zone_data['status'] == IS_STAGE_COMPLETE:
                     print(f"{zone_name}은 이미 완료되었습니다.")
 
-# Knight 타입을 객체로 정의
-def build_states(info):
-    states = []
-    type = types[info["type"]] if info["type"] in types else types["11x6"]
-    for st in type["states"]:
-        rects = make_rects(info["size"], st["rect"])
-        states.append((rects, st["size"]))
-    return states
-
-
 class Knight(SheetSprite):
     JUMP_POWER = 1000
     HURT_DURATION = 0.5
@@ -84,21 +76,21 @@ class Knight(SheetSprite):
     def __init__(self, info, bg):
         super().__init__(f'res/knight_sheet.png', 80, 150, 10) #160, 500
         self.bg = bg
-        self.states = build_states(info)
         self.running = True
-        self.width, self.height = info["size"], info["size"]
         self.mag = 0.6  # 크기 배율을 설정
         self.time = 0
         self.flip = True  # 이미지 반전 상태를 저장
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
+        # StatesManager: 애니메이션 관리
+        self.state_manager = StatesManager(info["type"], info["size"])
+
         # ZoneManager: 구역 상태 관리
         self.zone_manager = ZoneManager(zones)
 
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
         self.y = 0
-       
 
         self.set_state(STATE_RUNNING)
 
@@ -122,14 +114,13 @@ class Knight(SheetSprite):
     def update(self):
         ox, oy = self.x, self.y
 
+        # 현재 상태별 동작 처리
         if self.state == STATE_HURT:
             self.time += gfw.frame_time
             if self.time >= Knight.HURT_DURATION:
                 self.set_state(STATE_RUNNING)
 
-         # 상태가 ROLLING일 때 처리
         elif self.state == STATE_ROLLING:
-            # 구르기 시 이동
             self.x += self.roll_dx * gfw.frame_time
             self.y += self.roll_dy * gfw.frame_time
 
@@ -142,21 +133,15 @@ class Knight(SheetSprite):
 
         # 상태가 RUNNING일 때 처리
         elif self.state == STATE_RUNNING:
-
-            # 이동 처리
             dx, dy = 0, 0
-            if self.key_state[SDLK_w]:  # 위쪽 이동
-                dy += Knight.MOVE_SPEED * gfw.frame_time
-            if self.key_state[SDLK_a]:  # 왼쪽 이동
-                dx -= Knight.MOVE_SPEED * gfw.frame_time
-            if self.key_state[SDLK_s]:  # 아래쪽 이동
-                dy -= Knight.MOVE_SPEED * gfw.frame_time
-            if self.key_state[SDLK_d]:  # 오른쪽 이동
-                dx += Knight.MOVE_SPEED * gfw.frame_time
-
+            if self.key_state[SDLK_w]: dy += Knight.MOVE_SPEED * gfw.frame_time
+            if self.key_state[SDLK_a]: dx -= Knight.MOVE_SPEED * gfw.frame_time
+            if self.key_state[SDLK_s]: dy -= Knight.MOVE_SPEED * gfw.frame_time
+            if self.key_state[SDLK_d]: dx += Knight.MOVE_SPEED * gfw.frame_time
             self.x += dx
             self.y += dy
 
+        # 배경 충돌 체크
         if self.bg.collides_box(*self.get_bb()):
             self.x, self.y = ox, oy
 
@@ -200,7 +185,8 @@ class Knight(SheetSprite):
 
     def set_state(self, state):
         self.state = state
-        self.src_rects, (self.width, self.height) = self.states[self.state]
+        # 상태에 맞는 애니메이션 데이터를 state_manager에서 가져옴
+        self.src_rects, (self.width, self.height) = self.state_manager.get_state_data(state)
         self.frame_count = len(self.src_rects)
 
     def get_bb(self):
@@ -225,13 +211,7 @@ class Knight(SheetSprite):
         # 좌우 반전 여부에 따라 그리기
         flip_scale = -1 if self.flip else 1
 
-        self.image.clip_composite_draw(
-            l, b, w, h,  # 클립 영역
-            0,  # 회전 각도
-            'h',  # 축을 기준으로 뒤집기 (h는 수평 반전)
-            *screen_pos,  # 그려질 위치
-            self.mag * w * flip_scale, self.mag * h  # 크기 (flip_scale로 반전 적용)
-        )   
+        self.image.clip_composite_draw(l, b, w, h, 0, 'h', *screen_pos, self.mag * w * flip_scale, self.mag * h)   
 
 if __name__ == '__main__':
     open_canvas()
