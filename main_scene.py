@@ -67,6 +67,18 @@ def handle_event(e):
         print(world.objects)
         return
 
+    if e.type == SDL_KEYDOWN:
+        for enemy in world.objects_at(world.layer.enemy):
+            if e.key == SDLK_2:
+                enemy.state = 'idle'
+            elif e.key == SDLK_3:
+                enemy.state = 'attack'
+            elif e.key == SDLK_4:
+                enemy.state = 'stunned'
+            elif e.key == SDLK_5:
+                enemy.state = 'dead'
+
+
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
         return 0
         #gfw.push(pause_scene)

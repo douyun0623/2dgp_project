@@ -10,7 +10,7 @@ class Demon(AnimSprite):
     def __init__(self, type, x, y):
         info = INFO[type]
         frame_count = info.frame_info['idle']['frames']
-        super().__init__(info.file, x, y, random.uniform(9, 11), frame_count)
+        super().__init__(info.file, x, y, random.uniform(10, 12), frame_count)
         self.layer_index = gfw.top().world.layer.enemy
         self.speed = random.uniform(*info.speed)
         self.info = info
@@ -77,12 +77,12 @@ class Demon(AnimSprite):
 
     # 애니메이션 상태에 맞는 프레임을 설정하는 함수
     def set_anim(self, state):
+        # 현재 상태에 맞는 프레임 수로 바꿔줌
+        self.frame_count = self.info.frame_info[self.state]['frames']    
+
         if self.state != state:
             self.state = state
             self.created_on = time.time()
-
-            # 현재 상태에 맞는 프레임 수로 바꿔줌
-            self.frame_count = self.info.frame_info[self.state]['frames']
 
 
     # 예시: Demon 클래스의 draw 메서드에서 사용하기
@@ -93,6 +93,13 @@ class Demon(AnimSprite):
 
         frame_info = self.info.frame_info[self.state]
         index = self.get_anim_index()
+        if index == frame_info['frames'] - 1:
+            self.is_dead = True
+
+        # 'dead' 상태에서 index가 마지막 프레임인지 확인 후 고정
+        if self.state == 'dead' and self.is_dead:
+            index = frame_info['frames'] - 1  # 마지막 프레임 고정
+
 
         # 애니메이션 프레임 인덱스를 출력
         print(f"Drawing {self.state} frame {index}")
@@ -168,9 +175,9 @@ INFO = [
         file='res/monster/crimson_wolf.png',
         frame_info={
             'idle': {'frames': 4, 'start_pos': (0, 1197 - 72 * 2), 'frame_size': (72, 72)},   # 
-            'move': {'frames': 6, 'start_pos': (248, 0), 'frame_size': (64, 64)},  # 예: move의 프레임 크기가 (64, 64)
-            'attack': {'frames': 5, 'start_pos': (640, 0), 'frame_size': (66, 66)},  # 예: attack의 프레임 크기가 (66, 66)
-            'stunned': {'frames': 3, 'start_pos': (970, 0), 'frame_size': (60, 60)},  # 예: stunned의 프레임 크기가 (60, 60)
+            'attack': {'frames': 5, 'start_pos': (0, 1197 - 609), 'frame_size': (72, 73)},  # 
+            'stunned': {'frames': 8, 'start_pos': (0, 1197 - 536), 'frame_size': (74, 73)},  # 한대 맞았을때
+            'dead': {'frames': 3, 'start_pos': (0, 1197 - 650), 'frame_size': (72, 41)}  # 사망시 이미지
         },
         speed=(50, 100),
         bbox=(-15, -15, 15, 15),
@@ -183,10 +190,10 @@ INFO = [
         clazz=Demon,
         file='res/monster/night_wing.png',
         frame_info={
-            'idle': {'frames': 4, 'start_pos': (0, 0), 'frame_size': (64, 64)},
-            'move': {'frames': 6, 'start_pos': (256, 0), 'frame_size': (66, 66)},
-            'attack': {'frames': 5, 'start_pos': (652, 0), 'frame_size': (68, 68)},
-            'stunned': {'frames': 3, 'start_pos': (992, 0), 'frame_size': (64, 64)},
+            'idle': {'frames': 10, 'start_pos': (0, 1773 - 151), 'frame_size': (73, 79)},
+            'attack': {'frames': 15, 'start_pos': (0, 1773 - 1166), 'frame_size': (82, 106)},
+            'stunned': {'frames': 8, 'start_pos': (0, 1773 - 752), 'frame_size': (74, 74)},
+            'dead': {'frames': 5, 'start_pos': (0, 1773 - 914), 'frame_size': (85, 89)}  # 사망시 이미지
         },
         speed=(20, 50),
         bbox=(-28, -5, 8, 31),
@@ -200,9 +207,9 @@ INFO = [
         file='res/monster/red_orc_warrior.png',
         frame_info={
             'idle': {'frames': 4, 'start_pos': (0, 0), 'frame_size': (60, 60)},
-            'move': {'frames': 6, 'start_pos': (240, 0), 'frame_size': (64, 64)},
             'attack': {'frames': 5, 'start_pos': (624, 0), 'frame_size': (70, 70)},
             'stunned': {'frames': 3, 'start_pos': (974, 0), 'frame_size': (62, 62)},
+            'dead': {'frames': 0, 'start_pos': (0, 1773 - 151), 'frame_size': (72, 41)}  # 사망시 이미지
         },
         speed=(40, 60),
         bbox=(-25, -14, 25, 14),
@@ -236,7 +243,7 @@ class DemonGen:
     def update(self):
         world = gfw.top().world
         if world.count_at(world.layer.enemy) >= 10: return
-        type = 0 # random.randrange(len(INFO))
+        type = 1 # random.randrange(len(INFO))
         # type = 2
         x, y = position_somewhere_outside_screen()
         info = INFO[type]
