@@ -10,7 +10,7 @@ class Demon(AnimSprite):
     def __init__(self, type, x, y):
         info = INFO[type]
         frame_count = info.frame_info['idle']['frames']
-        super().__init__(info.file, x, y, random.uniform(10, 12), frame_count)
+        super().__init__(info.file, x, y, random.uniform(8, 10), frame_count)
         self.layer_index = gfw.top().world.layer.enemy
         self.speed = random.uniform(*info.speed)
         self.info = info
@@ -92,6 +92,7 @@ class Demon(AnimSprite):
         screen_pos = bg.to_screen(self.x, self.y)
 
         frame_info = self.info.frame_info[self.state]
+
         index = self.get_anim_index()
         if index == frame_info['frames'] - 1:
             self.is_dead = True
@@ -206,10 +207,10 @@ INFO = [
         clazz=Demon,
         file='res/monster/red_orc_warrior.png',
         frame_info={
-            'idle': {'frames': 4, 'start_pos': (0, 0), 'frame_size': (60, 60)},
-            'attack': {'frames': 5, 'start_pos': (624, 0), 'frame_size': (70, 70)},
-            'stunned': {'frames': 3, 'start_pos': (974, 0), 'frame_size': (62, 62)},
-            'dead': {'frames': 0, 'start_pos': (0, 1773 - 151), 'frame_size': (72, 41)}  # 사망시 이미지
+            'idle': {'frames': 6, 'start_pos': (0, 1245 - 233), 'frame_size': (72, 74)},
+            'attack': {'frames': 4, 'start_pos': (0, 1245 - 648), 'frame_size': (103, 89)},
+            'stunned': {'frames': 5, 'start_pos': (0, 1245 - 314), 'frame_size': (78, 73)},
+            'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
         },
         speed=(40, 60),
         bbox=(-25, -14, 25, 14),
@@ -243,7 +244,7 @@ class DemonGen:
     def update(self):
         world = gfw.top().world
         if world.count_at(world.layer.enemy) >= 10: return
-        type = 1 # random.randrange(len(INFO))
+        type = 2 # random.randrange(len(INFO))
         # type = 2
         x, y = position_somewhere_outside_screen()
         info = INFO[type]
