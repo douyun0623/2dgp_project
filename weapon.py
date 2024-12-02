@@ -50,9 +50,10 @@ class Bullet(Sprite):
             return False
 
         dead = obj.hit(self.power)
-        if dead:
-            main_scene = gfw.top()
-            main_scene.world.remove(obj)
+
+        # if dead and obj.is_remove == True:
+        #     main_scene = gfw.top()
+        #     main_scene.world.remove(obj)
 
         self.reset()
         return dead

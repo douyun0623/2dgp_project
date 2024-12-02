@@ -7,6 +7,7 @@ from gfw import *
 class Demon(AnimSprite):
     STUN_DURATION = 1.5
     STEP_BACK_TILL = STUN_DURATION - 0.2
+    DEAD_DURATION = 2.0
     def __init__(self, type, x, y):
         info = INFO[type]
         frame_count = info.frame_info['idle']['frames']
@@ -16,11 +17,14 @@ class Demon(AnimSprite):
         self.info = info
         self.state = 'idle'  # 'idle' 상태로 초기화
         self.flip = ''
+        self.is_remove = False
         self.mag = 2  # 이미지 크기를 1.5배 확대
         self.max_life = info.life
         self.life = self.max_life
         self.stun_timer = 0
         self.score = info.score
+        self.is_dead = False  # 죽음 상태 추가
+        self.dead_timer = 0.0  # 사라지기까지 대기 시간
 
     def check_stun(self):
         if self.stun_timer <= 0: return False
@@ -40,7 +44,13 @@ class Demon(AnimSprite):
             return False
         self.set_anim('stunned')
         self.life -= damage
-        if self.life <= 0: return True
+        if self.life <= 0: 
+            self.state = 'dead'
+            self.is_dead = True
+            self.dead_timer = self.DEAD_DURATION
+            self.set_anim('dead')  # 죽음 애니메이션 설정
+            return True
+
         self.stun_timer = self.STUN_DURATION
         world = gfw.top().world
         player = world.object_at(world.layer.player, 0)
@@ -68,6 +78,15 @@ class Demon(AnimSprite):
 
         if self.check_stun():
             return
+
+        if self.is_dead:
+            self.set_anim('dead')  # 죽음 상태 유지
+            self.dead_timer -= gfw.frame_time
+            if self.dead_timer <= 0:
+                self.is_remove = True
+            return
+
+
         world = gfw.top().world
         player = world.object_at(world.layer.player, 0)
         diff_x, diff_y = player.x - self.x, player.y - self.y
@@ -97,10 +116,6 @@ class Demon(AnimSprite):
         frame_info = self.info.frame_info[self.state]
 
         index = self.get_anim_index()
-        if index == frame_info['frames'] - 1:
-            self.is_dead = True
-
-        # 'dead' 상태에서 index가 마지막 프레임인지 확인 후 고정
         if self.state == 'dead' and self.is_dead:
             index = frame_info['frames'] - 1  # 마지막 프레임 고정
 

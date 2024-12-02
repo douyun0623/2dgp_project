@@ -32,6 +32,8 @@ class World:
     def update(self):
         for go in self.all_objects_reversed():
             go.update()
+            if hasattr(go, 'is_remove') and go.is_remove:
+                self.remove(go)
     def draw(self):
         for go in self.all_objects():
             go.draw()
