@@ -71,6 +71,8 @@ def handle_event(e):
                 enemy.state = 'stunned'
             elif e.key == SDLK_5:
                 enemy.state = 'dead'
+            elif e.key == SDLK_k:
+                Knight.weapon.attack()
 
 
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:

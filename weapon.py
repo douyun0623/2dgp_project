@@ -73,7 +73,7 @@ class AK47(AnimSprite):
         self.bullets = []
         self.power = 25
         self.speed = 200
-        self.time = self.COOL_TIME
+        self.cooldown = 0.0
         self.append()
     def get_pos(self):
         if self.player.flip:
@@ -86,6 +86,8 @@ class AK47(AnimSprite):
         bullet = Bullet(self.player, f'res/gun/AK47_Bullet.png', self.power, self.speed)
         self.bullets.append(bullet) # 총알 이미지 추가
     def fire(self):  # fire() 메서드 추가
+        if self.cooldown > 0:  # 쿨타임이 남아 있으면 발사하지 않음
+            return
         # 발사할 총알이 준비되었는지 확인하고 발사
         for b in self.bullets:
             if not b.valid:  # 총알이 발사되지 않은 상태일 때
@@ -94,19 +96,13 @@ class AK47(AnimSprite):
                     self.time = self.COOL_TIME  # 발사 후 쿨타임 초기화
                 return
     def update(self):
-        fires = False 
-        if self.time > 0:
-            self.time -= gfw.frame_time
-        else:
-            fires = True
+        # 쿨타임 감소 처리
+        if self.cooldown > 0:
+            self.cooldown -= gfw.frame_time
+
         for b in self.bullets: 
-            if b.valid: 
+            if b.valid:  # 이미 발사된 총알만 업데이트
                 b.update()
-            elif fires:
-                fires = False
-                fired = b.fire()
-                if fired:
-                    self.time = self.COOL_TIME
 
     def draw(self):
         index = self.get_anim_index()
