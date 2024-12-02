@@ -8,7 +8,7 @@ class Bullet(Sprite):
         self.player = player
         self.power = power
         self.speed = speed  # 총알 속도
-        # self.mag = 2  # 크기 배율을 설정
+        self.mag = 4  # 크기 배율을 설정
         self.angle = 0
         self.dx, self.dy = 0, 0
         self.reset()
@@ -30,7 +30,7 @@ class Bullet(Sprite):
     def draw(self):
         bg = self.player.bg
         x, y = bg.to_screen(self.x, self.y)
-        self.image.clip_composite_draw(0, 0, self.width, self.height, self.angle, '', x, y, self.width, self.height)
+        self.image.clip_composite_draw(0, 0, self.width, self.height, self.angle, '', x, y, self.width* self.mag, self.height* self.mag)
     
     def update(self):
         self.angle += self.speed * TWO_PI * gfw.frame_time
@@ -68,15 +68,20 @@ class Bullet(Sprite):
 class AK47(AnimSprite):
     COOL_TIME = 1.0
     def __init__(self, player):  # width = 96, height 48    attack_speed=1.5, range=100, damage=c, fps=10, initX = 25, initY = -80
-        super().__init__(f'res/gun/AK47_Sprite.png', player.x, player.y, 10)
+        super().__init__(f'res/gun/AK47_Sprite.png', player.x, player.y, 10, 12)
         self.player = player
         self.bullets = []
         self.power = 25
         self.speed = 200
-
         self.time = self.COOL_TIME
         self.append()
-
+    def get_pos(self):
+        if self.player.flip:
+            self.x = self.player.x + 25
+            self.y = self.player.y - 80
+        else:
+            self.x = self.player.x - 25
+            self.y = self.player.y - 80
     def append(self):
         bullet = Bullet(self.player, f'res/gun/AK47_Bullet.png', self.power, self.speed)
         self.bullets.append(bullet) # 총알 이미지 추가
@@ -106,12 +111,24 @@ class AK47(AnimSprite):
     def draw(self):
         index = self.get_anim_index()
         bg = self.player.bg
-        screen_pos = bg.to_screen(self.player.x, self.player.y)
+        self.get_pos()
+        screen_pos = bg.to_screen(self.x, self.y)
 
         # 디버깅을 위해 index와 화면 좌표를 출력해봄
-        print(f"Anim Index: {index}, Screen Pos: {screen_pos}")
 
-        self.image.clip_composite_draw(index * self.width, 0, self.width, self.height, 0, '', *screen_pos, self.width, self.height)
+        # print(f"Anim Index: {index}, Screen Pos: {screen_pos}")
+        
+        
+        # 좌우 반전 여부에 따라 그리기
+        flip_scale = '' if self.player.flip else 'h'
+
+        self.image.clip_composite_draw(
+            index * self.width, 0, self.width, self.height, 
+            0, flip_scale,  # 좌우 반전을 위한 flip_scale
+            *screen_pos, 
+            self.width, self.height
+        )
+
 
         for b in self.bullets: 
             if b.valid: b.draw()
