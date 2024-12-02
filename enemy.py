@@ -5,7 +5,7 @@ from gfw import *
 # from map_helper import *
 
 class Demon(AnimSprite):
-    STUN_DURATION = 1.0
+    STUN_DURATION = 1.5
     STEP_BACK_TILL = STUN_DURATION - 0.2
     def __init__(self, type, x, y):
         info = INFO[type]
@@ -28,6 +28,8 @@ class Demon(AnimSprite):
         if self.stun_timer > self.STEP_BACK_TILL:
             self.x += self.waver_x * gfw.frame_time
             self.y += self.waver_y * gfw.frame_time
+        else:
+            self.set_anim('idle')
         return True
 
     def is_stunned(self):
@@ -36,6 +38,7 @@ class Demon(AnimSprite):
     def hit(self, damage): #return True if dead
         if self.stun_timer > 0:
             return False
+        self.set_anim('stunned')
         self.life -= damage
         if self.life <= 0: return True
         self.stun_timer = self.STUN_DURATION

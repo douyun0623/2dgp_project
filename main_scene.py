@@ -23,10 +23,9 @@ class CollisionChecker:
     def draw(self): pass
     def update(self):
         for obj in world.objects_at(world.layer.enemy):
-            player.weapon.try_hit(obj)
+            Knight.weapon.try_hit(obj)
 
 def enter():
-    
     # world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
 
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
@@ -44,7 +43,7 @@ def enter():
     print(k.h)
 
     world.append(DemonGen(), world.layer.controller)
-    # world.append(CollisionChecker(), world.layer.controller)
+    world.append(CollisionChecker(), world.layer.controller)
 
 def exit():
     world.clear()

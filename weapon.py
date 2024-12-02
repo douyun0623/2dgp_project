@@ -8,7 +8,7 @@ class Bullet(Sprite):
         self.player = player
         self.power = power
         self.speed = speed  # 총알 속도
-        self.mag = 4  # 크기 배율을 설정
+        self.mag = 3  # 크기 배율을 설정
         self.angle = 0
         self.dx, self.dy = 0, 0
         self.reset()
@@ -115,25 +115,17 @@ class AK47(AnimSprite):
         screen_pos = bg.to_screen(self.x, self.y)
 
         # 디버깅을 위해 index와 화면 좌표를 출력해봄
-
         # print(f"Anim Index: {index}, Screen Pos: {screen_pos}")
-        
         
         # 좌우 반전 여부에 따라 그리기
         flip_scale = '' if self.player.flip else 'h'
-
-        self.image.clip_composite_draw(
-            index * self.width, 0, self.width, self.height, 
-            0, flip_scale,  # 좌우 반전을 위한 flip_scale
-            *screen_pos, 
-            self.width, self.height
-        )
-
+        self.image.clip_composite_draw(index * self.width, 0, self.width, self.height, 0, flip_scale, *screen_pos, self.width, self.height)
 
         for b in self.bullets: 
             if b.valid: b.draw()
+
     def try_hit(self, obj):
-        for b in self.bombs:
+        for b in self.bullets:
             if b.valid and b.try_hit(obj):
                 return True
         return False
