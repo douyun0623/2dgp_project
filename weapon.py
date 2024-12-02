@@ -14,11 +14,11 @@ class Bullet(Sprite):
         self.reset()
     def reset(self):
         self.valid = False
-    def fire(self):
+    def fire(self, weapon_x, weapon_y):
         world = gfw.top().world
         if world.count_at(world.layer.enemy) == 0: return False
         demons = world.objects_at(world.layer.enemy)
-        self.x, self.y = self.player.x, self.player.y
+        self.x, self.y = weapon_x, weapon_y
         INF = float('inf')
         nearest = min(demons, key=lambda d: INF if d.is_stunned() else (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
         if nearest.is_stunned(): return False
@@ -33,12 +33,6 @@ class Bullet(Sprite):
         self.image.clip_composite_draw(0, 0, self.width, self.height, self.angle, '', x, y, self.width* self.mag, self.height* self.mag)
     
     def update(self):
-        self.angle += self.speed * TWO_PI * gfw.frame_time
-        if self.angle >= TWO_PI:
-            self.angle -= TWO_PI
-        self.x = self.player.x + self.radius * math.cos(self.angle)
-        self.y = self.player.y + self.radius * math.sin(self.angle)
-    def update(self):
         self.x += self.dx * gfw.frame_time
         self.y += self.dy * gfw.frame_time
 
@@ -48,6 +42,7 @@ class Bullet(Sprite):
         if self.x < l or r < self.x or \
             self.y < b or t < self.y:
             self.reset()
+
     def try_hit(self, obj): # returns False if obj is removed
         if not gfw.collides_box(self, obj):
             return False
@@ -82,6 +77,11 @@ class AK47(AnimSprite):
         else:
             self.x = self.player.x - 25
             self.y = self.player.y - 80
+    def get_bullet_pos(self):
+        if self.player.flip:
+            return self.x + 35, self.y + 10
+        else:
+            return self.x - 35, self.y + 10
     def append(self):
         bullet = Bullet(self.player, f'res/gun/AK47_Bullet.png', self.power, self.speed)
         self.bullets.append(bullet) # 총알 이미지 추가
@@ -91,7 +91,8 @@ class AK47(AnimSprite):
         # 발사할 총알이 준비되었는지 확인하고 발사
         for b in self.bullets:
             if not b.valid:  # 총알이 발사되지 않은 상태일 때
-                fired = b.fire()  # 총알을 발사
+                bullet_x, bullet_y = self.get_bullet_pos()  # 총알 발사 위치 얻기
+                fired = b.fire(bullet_x, bullet_y)  # 총알을 발사
                 if fired:
                     self.time = self.COOL_TIME  # 발사 후 쿨타임 초기화
                 return
