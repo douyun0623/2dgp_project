@@ -31,8 +31,6 @@ class Demon(AnimSprite):
         # 공격실행
     def attack(self):
         self.set_anim('attack')  # 공격 애니메이션 출력
-        
-
 
     def check_stun(self):
         if self.stun_timer <= 0: return False
@@ -77,8 +75,6 @@ class Demon(AnimSprite):
          # 상태에 맞는 애니메이션을 설정
         if self.state == 'idle':
             self.set_anim('idle')  # 'idle' 상태 애니메이션 사용
-        elif self.state == 'move':
-            self.set_anim('move')  # 'move' 상태 애니메이션 사용
         elif self.state == 'attack':
             self.set_anim('attack')  # 'attack' 상태 애니메이션 사용
         elif self.state == 'stunned':
@@ -98,11 +94,14 @@ class Demon(AnimSprite):
         player = world.object_at(world.layer.player, 0)
         diff_x, diff_y = player.x - self.x, player.y - self.y
         dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
-        if dist >= 1:
+        if dist >= self.info.attackRange:
+            self.set_anim('idle')
             dx = self.speed * diff_x / dist * gfw.frame_time
             self.x += dx
             self.y += self.speed * diff_y / dist * gfw.frame_time
             self.flip = 'h' if dx > 0 else ''
+        else:
+            self.attack()
 
     # 애니메이션 상태에 맞는 프레임을 설정하는 함수
     def set_anim(self, state):
@@ -204,7 +203,7 @@ INFO = [
         },
         speed=(50, 100),
         attackDamage=10,
-        attackRange=10,
+        attackRange=5,
         bbox=(-15, -15, 15, 15),
         life=50,
         score=10,
@@ -222,7 +221,7 @@ INFO = [
         },
         speed=(20, 50),
         attackDamage=10,
-        attackRange=10,
+        attackRange=5,
         bbox=(-28, -5, 8, 31),
         life=150,
         score=50,
@@ -240,7 +239,7 @@ INFO = [
         },
         speed=(40, 60),
         attackDamage=10,
-        attackRange=10,
+        attackRange=5,
         bbox=(-25, -14, 25, 14),
         life=100,
         score=30,
@@ -271,7 +270,7 @@ class DemonGen:
     def draw(self): pass
     def update(self):
         world = gfw.top().world
-        if world.count_at(world.layer.enemy) >= 1: return
+        if world.count_at(world.layer.enemy) >= 4: return
         type = random.randrange(len(INFO))
         x, y = position_somewhere_outside_screen()
         info = INFO[type]
