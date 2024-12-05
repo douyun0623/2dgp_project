@@ -92,7 +92,7 @@ class Demon(AnimSprite):
 
         world = gfw.top().world
         player = world.object_at(world.layer.player, 0)
-        diff_x, diff_y = player.x - self.x, player.y - self.y
+        diff_x, diff_y = player.x - self.x, player.y - 70 - self.y
         dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
         if dist >= self.info.attackRange:
             self.set_anim('idle')
@@ -203,9 +203,9 @@ INFO = [
         },
         speed=(50, 100),
         attackDamage=10,
-        attackRange=5,
+        attackRange=80,
         bbox=(-15, -15, 15, 15),
-        life=50,
+        life=60,
         score=10,
     ),
 
@@ -221,7 +221,7 @@ INFO = [
         },
         speed=(20, 50),
         attackDamage=10,
-        attackRange=5,
+        attackRange=80,
         bbox=(-28, -5, 8, 31),
         life=150,
         score=50,
@@ -239,7 +239,7 @@ INFO = [
         },
         speed=(40, 60),
         attackDamage=10,
-        attackRange=5,
+        attackRange=70,
         bbox=(-25, -14, 25, 14),
         life=100,
         score=30,
