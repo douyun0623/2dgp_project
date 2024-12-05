@@ -41,6 +41,7 @@ def enter():
 
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
+    
 
     world.append(DemonGen(), world.layer.controller)
     world.append(CollisionChecker(), world.layer.controller)

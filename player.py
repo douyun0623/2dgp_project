@@ -53,8 +53,9 @@ class StatesManager:
 
 # ZoneManager: 영역 상태 관리
 class ZoneManager:
-    def __init__(self, zones):
+    def __init__(self, zones, bg):
         self.zones = zones
+        self.bg = bg
 
     def update_zone_status(self, x, y):
         for zone_name, zone_data in self.zones.items():
@@ -64,9 +65,11 @@ class ZoneManager:
                     zone_data['status'] = IS_STAGE_ACTIVE
                     print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
                 elif zone_data['status'] == IS_STAGE_ACTIVE:
+                    self.bg.set_collision_tiles({2, 43})
                     print(f"{zone_name}은 이미 진행 중입니다.")
                 elif zone_data['status'] == IS_STAGE_COMPLETE:
                     print(f"{zone_name}은 이미 완료되었습니다.")
+                    self.bg.set_collision_tiles({2})
 
 class Knight(SheetSprite):
     JUMP_POWER = 1000
@@ -91,7 +94,7 @@ class Knight(SheetSprite):
         self.state_manager = StatesManager(info["type"], info["size"])
 
         # ZoneManager: 구역 상태 관리
-        self.zone_manager = ZoneManager(zones)
+        self.zone_manager = ZoneManager(zones, bg)
 
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
         self.y = 0
