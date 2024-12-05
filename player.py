@@ -76,11 +76,12 @@ class Knight(SheetSprite):
     ROLL_SPEED = 400  # 구르기 시 이동 속도 (픽셀/초)
 
     def __init__(self, info, bg):
-        super().__init__(f'res/knight_sheet.png', 80, 150, 10) #160, 500
+        super().__init__(f'res/knight_sheet.png', 80, 150, 8) #160, 500
         self.bg = bg
         self.running = True
         self.hp = 10
         self.mag = 0.6  # 크기 배율을 설정
+        self.is_invincible = False
         self.time = 0
         self.flip = True  # 이미지 반전 상태를 저장
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
@@ -111,6 +112,7 @@ class Knight(SheetSprite):
             elif e.key == SDLK_d:  # 오른쪽 이동: 정방향
                 self.flip = True
             if e.key == SDLK_j:  # 구르기 실행
+                self.is_invincible = True
                 self.rolling()
             if e.key == SDLK_c:  # 모든 벽 이동할 수 있도록 함
                 self.bg.set_collision_tiles({})
@@ -146,6 +148,7 @@ class Knight(SheetSprite):
             self.current_index = self.get_anim_index()
             if self.index == len(self.src_rects) - 1:  # 마지막 애니메이션 프레임
                 self.set_state(STATE_RUNNING)
+                self.is_invincible = False
 
         # 상태가 RUNNING일 때 처리
         elif self.state == STATE_RUNNING:

@@ -99,8 +99,11 @@ class Demon(AnimSprite):
             self.set_anim('idle')
             self.is_attack = False
             if dist <= self.info.attackRange:   
-                player.hp -= self.info.attackDamage
-                print(f"플레이어 HP 감소! 현재 HP: {player.hp}")
+                if player.is_invincible:    # 무적
+                    print(f"플레이어 무적상태! 현재 HP: {player.hp}")
+                else:   # 무적 x
+                    player.hp -= self.info.attackDamage
+                    print(f"플레이어 HP 감소! 현재 HP: {player.hp}")
 
     # 애니메이션 상태에 맞는 프레임을 설정하는 함수
     def set_anim(self, state):
