@@ -10,7 +10,7 @@ world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 canvas_width = 1152  # 1280
 canvas_height = 648  # 720
 shows_bounding_box = True
-shows_object_count = False
+shows_object_count = True
 
 knight_info = {
     "id": "1",
@@ -33,7 +33,7 @@ def enter():
     world.bg.x = 1400
     world.bg.set_collision_tiles({2})
     world.append(world.bg, world.layer.bg)
-    # print(world.bg.)
+    
     global Knight
     Knight = Knight(knight_info, world.bg)
     world.append(Knight, world.layer.player)
@@ -41,9 +41,9 @@ def enter():
 
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
-    
 
-    world.append(DemonGen(), world.layer.controller)
+
+    # world.append(DemonGen(), world.layer.controller)
     world.append(CollisionChecker(), world.layer.controller)
 
 def exit():

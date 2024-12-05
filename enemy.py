@@ -203,7 +203,7 @@ INFO = [
             'stunned': {'frames': 8, 'start_pos': (0, 1197 - 536), 'frame_size': (74, 73)},  # 한대 맞았을때
             'dead': {'frames': 3, 'start_pos': (0, 1197 - 650), 'frame_size': (72, 41)}  # 사망시 이미지
         },
-        speed=(50, 100),
+        speed=(80, 90),
         attackDamage=2,
         attackRange=80,
         bbox=(-15, -15, 15, 15),
@@ -221,7 +221,7 @@ INFO = [
             'stunned': {'frames': 8, 'start_pos': (0, 1773 - 752), 'frame_size': (74, 74)},
             'dead': {'frames': 5, 'start_pos': (0, 1773 - 914), 'frame_size': (85, 89)}  # 사망시 이미지
         },
-        speed=(20, 50),
+        speed=(40, 50),
         attackDamage=3,
         attackRange=80,
         bbox=(-28, -5, 8, 31),
@@ -239,7 +239,7 @@ INFO = [
             'stunned': {'frames': 5, 'start_pos': (0, 1245 - 314), 'frame_size': (78, 73)},
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
         },
-        speed=(40, 60),
+        speed=(50, 60),
         attackDamage=4,
         attackRange=70,
         bbox=(-25, -14, 25, 14),
@@ -268,15 +268,33 @@ def position_somewhere_outside_screen():
     # print(f'{side=} {(x,y)=}')
     return x, y
 
+def position_within_bounds(zone):
+    # (l, b)는 좌하단, (r, t)는 우상단
+    x = random.uniform(zone['l'], zone['r'])  # x는 좌측(l)과 우측(r) 사이에서 무작위 값
+    y = random.uniform(zone['b'], zone['t'])  # y는 하단(b)과 상단(t) 사이에서 무작위 값
+    return x, y
+
 class DemonGen:
+    def __init__(self, l,b,r,t):
+        self.zone = {'l' : l, 'b' : b, 'r' : r,'t' : t}
+        self.gen()
+
     def draw(self): pass
-    def update(self):
-        world = gfw.top().world
-        if world.count_at(world.layer.enemy) >= 4: return
+    def gen(self):
         type = random.randrange(len(INFO))
-        x, y = position_somewhere_outside_screen()
+        if type == 1:
+            x, y = position_somewhere_outside_screen()
+        else:
+            x, y = position_within_bounds(self.zone)
         info = INFO[type]
         demon = info.clazz(type, x, y)
         if demon.is_on_obstacle():
             return
+        world = gfw.top().world
         world.append(demon)
+
+    def update(self):
+        world = gfw.top().world
+        if world.count_at(world.layer.enemy) == 0:
+            print(f"남은 적 없음")
+        

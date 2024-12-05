@@ -1,6 +1,7 @@
 from pico2d import *
 from gfw import *
 from weapon import *
+from enemy import Demon, DemonGen
 import time
 
 def make_rect(size, idx):
@@ -56,6 +57,8 @@ class ZoneManager:
     def __init__(self, zones, bg):
         self.zones = zones
         self.bg = bg
+        # self.world = gfw.top().world
+
 
     def update_zone_status(self, x, y):
         for zone_name, zone_data in self.zones.items():
@@ -63,13 +66,35 @@ class ZoneManager:
             if left <= x <= right and bottom <= y <= top:
                 if zone_data['status'] == IS_STAGE_ENTERING:
                     zone_data['status'] = IS_STAGE_ACTIVE
+                    world = gfw.top().world
+                    # DemonGen 인스턴스 생성 및 참조 저장
+                    gen_instance = DemonGen(left, bottom, right, top)
+                    world.append(gen_instance, world.layer.controller)
                     print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
+
+                    # 저장해둔 DemonGen 인스턴스를 zone_data에 추가하여 관리
+                    zone_data['gen_instance'] = gen_instance
+
                 elif zone_data['status'] == IS_STAGE_ACTIVE:
                     self.bg.set_collision_tiles({2, 43})
-                    print(f"{zone_name}은 이미 진행 중입니다.")
+                    world = gfw.top().world
+                    if world.count_at(world.layer.enemy) == 0:
+                        zone_data['status'] = IS_STAGE_COMPLETE
+                        # DemonGen 인스턴스 제거
+                        if 'gen_instance' in zone_data:
+                            gen_instance = zone_data['gen_instance']
+                            world.remove(gen_instance, world.layer.controller)
+                            del zone_data['gen_instance']  # 관리에서 제거
+                        else:
+                            print("Error: gen_instance not found.")
+
                 elif zone_data['status'] == IS_STAGE_COMPLETE:
-                    print(f"{zone_name}은 이미 완료되었습니다.")
-                    self.bg.set_collision_tiles({2})
+                    # 상태 완료 메시지가 한 번만 출력되도록 처리
+                    if not zone_data.get('completed_flag', False):
+                        print(f"{zone_name}은 이미 완료되었습니다.")
+                        self.bg.set_collision_tiles({2})
+                        zone_data['completed_flag'] = True  # 플래그 설정
+
 
 class Knight(SheetSprite):
     JUMP_POWER = 1000
