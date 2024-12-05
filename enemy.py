@@ -275,11 +275,13 @@ def position_within_bounds(zone):
     return x, y
 
 class DemonGen:
-    def __init__(self, l,b,r,t):
+    def __init__(self, l,b,r,t, enemy_count):
         self.zone = {'l' : l, 'b' : b, 'r' : r,'t' : t}
-        self.gen()
+        for _ in range(enemy_count):
+            self.gen()
 
     def draw(self): pass
+
     def gen(self):
         type = random.randrange(len(INFO))
         if type == 1:

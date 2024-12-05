@@ -29,11 +29,11 @@ types = {
 
 # 구역 정보 (좌표 범위 및 상태)
 zones = {
-    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING},
-    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING},
-    'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING},
-    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING},
-    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING}
+    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
+    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 2},
+    'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
+    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 3},
+    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1}
 }
 
 # StatesManager: 관리 및 애니메이션 관리
@@ -68,7 +68,7 @@ class ZoneManager:
                     zone_data['status'] = IS_STAGE_ACTIVE
                     world = gfw.top().world
                     # DemonGen 인스턴스 생성 및 참조 저장
-                    gen_instance = DemonGen(left, bottom, right, top)
+                    gen_instance = DemonGen(left, bottom, right, top, zone_data['enemey_count'])
                     world.append(gen_instance, world.layer.controller)
                     print(f"{zone_name}에 도달했습니다! 상태: IS_STAGE_ACTIVE")
 
