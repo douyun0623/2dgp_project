@@ -17,6 +17,7 @@ class Demon(AnimSprite):
         self.state = 'idle'  # 'idle' 상태로 초기화
         self.flip = ''
         self.is_remove = False
+        self.is_attack = False
         self.mag = 2  # 이미지 크기를 1.5배 확대
         self.max_life = self.info.life
         self.life = self.max_life
@@ -27,10 +28,6 @@ class Demon(AnimSprite):
 
         world = gfw.top().world
         self.player = world.objects_at(world.layer.player)   # 플레이어의 위치 가져옴
-
-        # 공격실행
-    def attack(self):
-        self.set_anim('attack')  # 공격 애니메이션 출력
 
     def check_stun(self):
         if self.stun_timer <= 0: return False
@@ -72,14 +69,6 @@ class Demon(AnimSprite):
         return self.life <= 0
 
     def update(self):
-         # 상태에 맞는 애니메이션을 설정
-        if self.state == 'idle':
-            self.set_anim('idle')  # 'idle' 상태 애니메이션 사용
-        elif self.state == 'attack':
-            self.set_anim('attack')  # 'attack' 상태 애니메이션 사용
-        elif self.state == 'stunned':
-            self.set_anim('stunned')  # 'stunned' 상태 애니메이션 사용
-
         if self.check_stun():
             return
 
@@ -94,14 +83,24 @@ class Demon(AnimSprite):
         player = world.object_at(world.layer.player, 0)
         diff_x, diff_y = player.x - self.x, player.y - 70 - self.y
         dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
-        if dist >= self.info.attackRange:
+
+        if dist >= self.info.attackRange and self.is_attack == False:
             self.set_anim('idle')
             dx = self.speed * diff_x / dist * gfw.frame_time
             self.x += dx
             self.y += self.speed * diff_y / dist * gfw.frame_time
             self.flip = 'h' if dx > 0 else ''
         else:
-            self.attack()
+            self.is_attack = True
+            self.set_anim('attack')
+
+        # 공격하는 상태의 마지막 프레임 일때, 플레이어 위치와와 enemy의 위체에서 공격사거리와 겹치면 플에이어에게 데미지를 주고 싶다.
+        if self.state == 'attack' and self.get_anim_index() == self.info.frame_info['attack']['frames'] - 1:  # 공격하는 상태에고, 
+            self.set_anim('idle')
+            self.is_attack = False
+            if dist <= self.info.attackRange:   
+                player.hp -= self.info.attackDamage
+                print(f"플레이어 HP 감소! 현재 HP: {player.hp}")
 
     # 애니메이션 상태에 맞는 프레임을 설정하는 함수
     def set_anim(self, state):
@@ -202,7 +201,7 @@ INFO = [
             'dead': {'frames': 3, 'start_pos': (0, 1197 - 650), 'frame_size': (72, 41)}  # 사망시 이미지
         },
         speed=(50, 100),
-        attackDamage=10,
+        attackDamage=2,
         attackRange=80,
         bbox=(-15, -15, 15, 15),
         life=60,
@@ -220,7 +219,7 @@ INFO = [
             'dead': {'frames': 5, 'start_pos': (0, 1773 - 914), 'frame_size': (85, 89)}  # 사망시 이미지
         },
         speed=(20, 50),
-        attackDamage=10,
+        attackDamage=3,
         attackRange=80,
         bbox=(-28, -5, 8, 31),
         life=150,
@@ -238,7 +237,7 @@ INFO = [
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
         },
         speed=(40, 60),
-        attackDamage=10,
+        attackDamage=4,
         attackRange=70,
         bbox=(-25, -14, 25, 14),
         life=100,

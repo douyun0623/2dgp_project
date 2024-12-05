@@ -79,6 +79,7 @@ class Knight(SheetSprite):
         super().__init__(f'res/knight_sheet.png', 80, 150, 10) #160, 500
         self.bg = bg
         self.running = True
+        self.hp = 10
         self.mag = 0.6  # 크기 배율을 설정
         self.time = 0
         self.flip = True  # 이미지 반전 상태를 저장
