@@ -9,22 +9,30 @@ class Demon(AnimSprite):
     STEP_BACK_TILL = STUN_DURATION - 0.2
     DEAD_DURATION = 2.0
     def __init__(self, type, x, y):
-        info = INFO[type]
-        frame_count = info.frame_info['idle']['frames']
-        super().__init__(info.file, x, y, random.uniform(8, 10), frame_count)
+        self.info = INFO[type]
+        frame_count = self.info.frame_info['idle']['frames']
+        super().__init__(self.info.file, x, y, random.uniform(8, 10), frame_count)
         self.layer_index = gfw.top().world.layer.enemy
-        self.speed = random.uniform(*info.speed)
-        self.info = info
+        self.speed = random.uniform(*self.info.speed)
         self.state = 'idle'  # 'idle' 상태로 초기화
         self.flip = ''
         self.is_remove = False
         self.mag = 2  # 이미지 크기를 1.5배 확대
-        self.max_life = info.life
+        self.max_life = self.info.life
         self.life = self.max_life
         self.stun_timer = 0
-        self.score = info.score
+        self.score = self.info.score
         self.is_dead = False  # 죽음 상태 추가
         self.dead_timer = 0.0  # 사라지기까지 대기 시간
+
+        world = gfw.top().world
+        self.player = world.objects_at(world.layer.player)   # 플레이어의 위치 가져옴
+
+        # 공격실행
+    def attack(self):
+        self.set_anim('attack')  # 공격 애니메이션 출력
+        
+
 
     def check_stun(self):
         if self.stun_timer <= 0: return False
@@ -86,7 +94,6 @@ class Demon(AnimSprite):
                 self.is_remove = True
             return
 
-
         world = gfw.top().world
         player = world.object_at(world.layer.player, 0)
         diff_x, diff_y = player.x - self.x, player.y - self.y
@@ -105,7 +112,6 @@ class Demon(AnimSprite):
         if self.state != state:
             self.state = state
             self.created_on = time.time()
-
 
     # 예시: Demon 클래스의 draw 메서드에서 사용하기
     def draw(self):
@@ -197,6 +203,8 @@ INFO = [
             'dead': {'frames': 3, 'start_pos': (0, 1197 - 650), 'frame_size': (72, 41)}  # 사망시 이미지
         },
         speed=(50, 100),
+        attackDamage=10,
+        attackRange=10,
         bbox=(-15, -15, 15, 15),
         life=50,
         score=10,
@@ -213,6 +221,8 @@ INFO = [
             'dead': {'frames': 5, 'start_pos': (0, 1773 - 914), 'frame_size': (85, 89)}  # 사망시 이미지
         },
         speed=(20, 50),
+        attackDamage=10,
+        attackRange=10,
         bbox=(-28, -5, 8, 31),
         life=150,
         score=50,
@@ -229,6 +239,8 @@ INFO = [
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
         },
         speed=(40, 60),
+        attackDamage=10,
+        attackRange=10,
         bbox=(-25, -14, 25, 14),
         life=100,
         score=30,

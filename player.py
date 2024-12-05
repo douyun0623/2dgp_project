@@ -10,13 +10,14 @@ def make_rect(size, idx):
 def make_rects(size, idxs):
     return list(map(lambda idx: make_rect(size, idx), idxs))
 
-STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(3)
+STATE_IDLE,STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(4)
 
 IS_STAGE_ENTERING, IS_STAGE_ACTIVE, IS_STAGE_COMPLETE = range(3)
 
 types = {
     "15x8": {
         "states": [
+            {"rect": [600], "size": [100, 140]},  # 0행 0~6
             {"rect": [700, 701, 702, 703, 704, 705, 706], "size": [100, 140]},  # 0행 0~6
             {"rect": [600, 601, 602, 603], "size": [100, 140]},  # 1행 14, 15 -> (100, 101)
             {"rect": [400], "size": [100, 140]},  # 2행 16~18 -> (200, 201, 202)
@@ -93,7 +94,7 @@ class Knight(SheetSprite):
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
         self.y = 0
 
-        self.set_state(STATE_RUNNING)
+        self.set_state(STATE_IDLE)
 
         # 무기 추가
         self.weapon = Weapons(self)
@@ -102,6 +103,7 @@ class Knight(SheetSprite):
     def handle_event(self, e):
         if e.type == SDL_KEYDOWN:
             if e.key in self.key_state:
+                self.set_state(STATE_RUNNING)
                 self.key_state[e.key] = True
             if e.key == SDLK_a:  # 왼쪽 이동: 반전
                 self.flip = False
@@ -118,8 +120,14 @@ class Knight(SheetSprite):
             if e.key in self.key_state:
                 self.key_state[e.key] = False
 
+    def check_idle(self):
+        return not any(self.key_state.values())
+
     def update(self):
         ox, oy = self.x, self.y
+
+        if self.check_idle():
+            self.set_state(STATE_IDLE)
 
         # 현재 상태별 동작 처리
         if self.state == STATE_HURT:
