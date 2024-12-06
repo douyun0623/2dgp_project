@@ -296,7 +296,8 @@ class DemonGen:
         world.append(demon)
 
     def update(self):
-        world = gfw.top().world
-        if world.count_at(world.layer.enemy) == 0:
-            print(f"남은 적 없음")
+        pass
+        # world = gfw.top().world
+        # if world.count_at(world.layer.enemy) == 0:
+        #     print(f"남은 적 없음")
         
