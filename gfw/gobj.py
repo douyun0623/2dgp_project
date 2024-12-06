@@ -233,7 +233,7 @@ def _get_folder(filename):
     return '.' if idx < 0 else filename[:idx]
 
 class MapBackground(InfiniteScrollBackground):
-    def __init__(self, filename, tilesize=50, wraps=True, fitsWidth=False, fitsHeight=False, dx=0, dy=0):
+    def __init__(self, filename, tilesize=50, wraps=False, fitsWidth=False, fitsHeight=False, dx=0, dy=0):
         super().__init__(None)
         self.filename = filename
         self.folder = _get_folder(filename)
@@ -270,28 +270,28 @@ class MapBackground(InfiniteScrollBackground):
             start_left %= map_total_width
             start_botm %= map_total_height
         ty = start_botm // self.tilesize
-        # print('-'*10,(left,bottom,right,top),'-'*70)
+
         while bottom < top:
             tx = start_left // self.tilesize
             curr_left = left
             while curr_left < right:
-                t_index = (self.layer.height - ty - 1) * self.layer.width + tx
-                tile = self.layer.data[t_index]
-                # print(f'{tx=} {ty=} {t_index=} {tile=} {bottom=} {top=}')
-                if tile in tiles:
-                    return True
+                if 0 <= tx < self.layer.width and 0 <= ty < self.layer.height:  # 맵 범위 체크 추가
+                    t_index = (self.layer.height - ty - 1) * self.layer.width + tx
+                    tile = self.layer.data[t_index]
+                    if tile in tiles:
+                        return True
                 curr_left += self.tilesize
                 tx += 1
-                if tx > self.layer.width:
+                if tx >= self.layer.width:
                     if not self.wraps: break
                     tx -= self.layer.width
             bottom += self.tilesize
             ty += 1
-            if ty > self.layer.height:
+            if ty >= self.layer.height:
                 if not self.wraps: break
                 ty -= self.layer.height
-        # print('='*100)
         return False
+
 
     # TODO: show() 가 override 되어야 한다
     # def show(self, x, y):
@@ -308,9 +308,11 @@ class MapBackground(InfiniteScrollBackground):
         self.y += gfw.frame_time * self.scroll_dy
     def draw(self):
         layer = self.layer
-        cw,ch = get_canvas_width(), get_canvas_height()
+        cw, ch = get_canvas_width(), get_canvas_height()
 
         sx, sy = round(self.x), round(self.y)
+        
+        # 더 이상 무한 스크롤되지 않게 wraps 체크
         if self.wraps:
             map_total_width = self.total_width()
             map_total_height = self.total_height()
@@ -319,41 +321,43 @@ class MapBackground(InfiniteScrollBackground):
                 sx += map_total_width;
             sy %= map_total_height;
             if sy < 0:
-                sy += map_total_width;
+                sy += map_total_height;
 
-        tile_x = sx // self.tilesize # 그려질 타일 크기 기준 어느 타일부터 시작할지
+        # 타일의 시작 좌표
+        tile_x = sx // self.tilesize
         tile_y = sy // self.tilesize
 
-        beg_x = -(sx % self.tilesize);
-        beg_y = -(sy % self.tilesize);
+        # 시작 좌표의 화면에서의 위치
+        beg_x = -(sx % self.tilesize)
+        beg_y = -(sy % self.tilesize)
 
         dst_left, dst_botm = beg_x, beg_y
         ty = tile_y
+        
+        # 화면에 보이는 영역에만 그리기
         while dst_botm < ch:
             tx = tile_x
             left = dst_left
             while left < cw:
-                t_index = (self.tmap.height - ty - 1) * layer.width + tx # 그 위치의 타일정보는 data[t_index] 에 있다
-                tile = layer.data[t_index]   # 그려야 할 타일 번호를 구한다
-                sx = (tile - 1) % self.ts.columns  # 해당 번호의 타일은 타일셋이미지 에서 왼쪽으로부터 sx 번째에 있다
-                sy = (tile - 1) // self.ts.columns # 해당 번호의 타일은 타일셋이미지 에서 위로부터 sy 번째에 있다
-                src_left = self.ts.margin + sx * (self.ts.tilewidth + self.ts.spacing) # 타일은 이미지의 src_left 번째 픽셀부터 시작 = 소스 x 좌표
-                src_botm = self.ts.margin + (self.ts.rows - sy - 1) * (self.ts.tileheight + self.ts.spacing) # 소스 y 좌표.
+                if tx >= 0 and tx < layer.width and ty >= 0 and ty < layer.height: # 그릴 수 있는 타일 범위
+                    t_index = (self.tmap.height - ty - 1) * layer.width + tx
+                    tile = layer.data[t_index]
+                    if tile > 0:
+                        sx = (tile - 1) % self.ts.columns
+                        sy = (tile - 1) // self.ts.columns
+                        src_left = self.ts.margin + sx * (self.ts.tilewidth + self.ts.spacing)
+                        src_botm = self.ts.margin + (self.ts.rows - sy - 1) * (self.ts.tileheight + self.ts.spacing)
 
-                self.ts.tile_image.clip_draw_to_origin(
-                    src_left, src_botm, self.ts.tilewidth, self.ts.tileheight, 
-                    left, dst_botm, self.tilesize, self.tilesize)
+                        self.ts.tile_image.clip_draw_to_origin(
+                            src_left, src_botm, self.ts.tilewidth, self.ts.tileheight, 
+                            left, dst_botm, self.tilesize, self.tilesize
+                        )
 
                 left += self.tilesize
                 tx += 1
-                if tx >= layer.width:
-                    if not self.wraps: break
-                    tx -= layer.width
             dst_botm += self.tilesize
             ty += 1
-            if ty >= layer.height:
-                if not self.wraps: break
-                ty -= layer.height
+
 
 class Button(Sprite):
     def __init__(self, np_normal, np_over, font, title, x, y, width, height, on_click):

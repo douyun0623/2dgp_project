@@ -26,7 +26,7 @@ class CollisionChecker:
             Knight.weapon.try_hit(obj)
 
 def enter():
-    # world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
+    world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
 
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
     world.bg.margin = 210
@@ -42,7 +42,6 @@ def enter():
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
 
-    # world.append(DemonGen(), world.layer.controller)
     world.append(CollisionChecker(), world.layer.controller)
 
 def exit():
@@ -60,20 +59,6 @@ def handle_event(e):
     if e.type == SDL_KEYDOWN and e.key == SDLK_1:
         print(world.objects)
         return
-
-    if e.type == SDL_KEYDOWN:
-        for enemy in world.objects_at(world.layer.enemy):
-            if e.key == SDLK_2:
-                enemy.state = 'idle'
-            elif e.key == SDLK_3:
-                enemy.state = 'attack'
-            elif e.key == SDLK_4:
-                enemy.state = 'stunned'
-            elif e.key == SDLK_5:
-                enemy.state = 'dead'
-            elif e.key == SDLK_k:
-                Knight.weapon.attack()
-
 
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
         return 0
