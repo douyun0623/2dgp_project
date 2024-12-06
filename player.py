@@ -13,7 +13,7 @@ def make_rects(size, idxs):
 
 STATE_IDLE,STATE_ROLLING,STATE_RUNNING, STATE_HURT = range(4)
 
-IS_STAGE_ENTERING, IS_STAGE_ACTIVE, IS_STAGE_COMPLETE = range(3)
+IS_STAGE_ENTERING, IS_STAGE_ACTIVE, IS_STAGE_COMPLETE, IS_PORTAL = range(4)
 
 types = {
     "15x8": {
@@ -30,10 +30,11 @@ types = {
 # 구역 정보 (좌표 범위 및 상태)
 zones = {
     'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
-    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 2},
+    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
     'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
-    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 3},
-    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1}
+    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
+    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
+    'zone6': {'range': ((3380, 3756), (3524, 3790)), 'status': IS_PORTAL, 'enemey_count' : 0}
 }
 
 # StatesManager: 관리 및 애니메이션 관리
@@ -95,6 +96,27 @@ class ZoneManager:
                         self.bg.set_collision_tiles({2})
                         zone_data['completed_flag'] = True  # 플래그 설정
 
+                elif zone_data['status'] == IS_PORTAL:
+                    # 다음 맵으로 이동
+                    world = gfw.top().world
+
+                    # 기존 배경(bg)을 제거
+                    if hasattr(world, 'bg') and world.bg in world.objects[world.layer.bg]:
+                        world.remove(world.bg, world.layer.bg)
+
+                    # 새로운 배경 생성 및 추가
+                    new_bg = MapBackground('res/map/boss.tmj', tilesize=50)
+                    new_bg.margin = 210
+                    new_bg.x = 1400
+                    new_bg.set_collision_tiles({2})
+                    
+                    # 새로운 배경을 world에 설정 및 추가
+                    world.bg = new_bg
+                    world.append(new_bg, world.layer.bg)
+
+                    print("포탈을 통해 새로운 맵으로 이동했습니다!")
+                    return True
+
 
 class Knight(SheetSprite):
     JUMP_POWER = 1000
@@ -121,6 +143,7 @@ class Knight(SheetSprite):
         # ZoneManager: 구역 상태 관리
         self.zone_manager = ZoneManager(zones, bg)
 
+        # 3380, 3756
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
         self.y = 0
 
@@ -129,6 +152,10 @@ class Knight(SheetSprite):
         # 무기 추가
         self.weapon = Weapons(self)
         self.weapon.append(AK47(self))
+
+    def move_portal(self):
+         # 3380, 3756
+        self.x, self.y = 3400, 3600
 
     def handle_event(self, e):
         if e.type == SDL_KEYDOWN:
@@ -139,6 +166,8 @@ class Knight(SheetSprite):
                 self.flip = False
             elif e.key == SDLK_d:  # 오른쪽 이동: 정방향
                 self.flip = True
+            if e.key == SDLK_o:
+                self.move_portal()
             if e.key == SDLK_j:  # 구르기 실행
                 self.is_invincible = True
                 self.rolling()
@@ -193,7 +222,9 @@ class Knight(SheetSprite):
             self.x, self.y = ox, oy
 
         # ZoneManager를 사용해 구역 상태를 관리
-        self.zone_manager.update_zone_status(self.x, self.y)
+        if self.zone_manager.update_zone_status(self.x, self.y) == True:
+            self.bg = gfw.top().world.bg  # 새로운 배경으로 업데이트
+
 
         self.y = clamp(self.bg.margin, self.y, self.bg.total_height() - self.bg.margin)
 
