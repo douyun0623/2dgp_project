@@ -18,7 +18,7 @@ class Demon(AnimSprite):
         self.flip = ''
         self.is_remove = False
         self.is_attack = False
-        self.mag = 2  # 이미지 크기를 1.5배 확대
+        self.mag = 2  # 이미지 크기를 배 확대
         self.max_life = self.info.life
         self.life = self.max_life
         self.stun_timer = 0
@@ -234,7 +234,7 @@ INFO = [
         clazz=Demon,
         file='res/monster/red_orc_warrior.png',
         frame_info={
-            'idle': {'frames': 6, 'start_pos': (0, 1245 - 233), 'frame_size': (72, 74)},
+            'idle': {'frames': 6, 'start_pos': (0, 1245 - 216), 'frame_size': (72, 74)},
             'attack': {'frames': 4, 'start_pos': (0, 1245 - 648), 'frame_size': (103, 89)},
             'stunned': {'frames': 5, 'start_pos': (0, 1245 - 314), 'frame_size': (78, 73)},
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
@@ -242,6 +242,25 @@ INFO = [
         speed=(50, 60),
         attackDamage=4,
         attackRange=70,
+        bbox=(-25, -14, 25, 14),
+        life=100,
+        score=30,
+    ),
+
+    # boss
+    DemonInfo(
+        clazz=Demon,
+        file='res/monster/black_dragon.png',
+        frame_info={
+            'idle': {'frames': 6, 'start_pos': (0, 1857 - 216), 'frame_size': (140, 113)},
+            'attack11': {'frames': 12, 'start_pos': (0, 1857 - 965), 'frame_size': (172, 146)},
+            'stunned': {'frames': 15, 'start_pos': (0, 1857 - 444), 'frame_size': (138, 113)},
+            'dead': {'frames': 10, 'start_pos': (0, 1857 - 688), 'frame_size': (145, 140)},  # 사망시 이미지
+            'attack': {'frames': 12, 'start_pos': (0, 1857 - 1258), 'frame_size': (160, 141)}
+        },
+        speed=(50, 60),
+        attackDamage=4,
+        attackRange=150,
         bbox=(-25, -14, 25, 14),
         life=100,
         score=30,
@@ -278,7 +297,7 @@ class DemonGen:
     def __init__(self, l,b,r,t, enemy_count):
         self.zone = {'l' : l, 'b' : b, 'r' : r,'t' : t}
         for _ in range(enemy_count):
-            self.gen()
+            self.gen_boss()
 
     def draw(self): pass
 
@@ -294,6 +313,18 @@ class DemonGen:
             return
         world = gfw.top().world
         world.append(demon)
+
+    def gen_boss(self):
+        type = 3
+        info = INFO[type]
+        # x, y = 3771, 910 # 위치 지정해줘야함
+        x, y = position_within_bounds(self.zone)
+        demon = info.clazz(type, x, y)
+        if demon.is_on_obstacle():
+            return
+        world = gfw.top().world
+        world.append(demon)
+
 
     def update(self):
         pass

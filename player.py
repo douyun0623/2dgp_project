@@ -283,8 +283,8 @@ class Knight(SheetSprite):
         screen_pos = self.bg.to_screen(self.x, self.y)
 
         # 좌표 출력
-        # print(f"World Position: (x: {self.x}, y: {self.y})")
-        # print(f"Screen Position: {screen_pos}")
+        print(f"World Position: (x: {self.x}, y: {self.y})")
+        print(f"Screen Position: {screen_pos}")
 
         # 좌우 반전 여부에 따라 그리기
         flip_scale = -1 if self.flip else 1
