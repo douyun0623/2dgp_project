@@ -1,7 +1,7 @@
 from pico2d import *
 from gfw import *
 from weapon import *
-from enemy import Demon, DemonGen
+from enemy import Demon, DemonGen, BossGen
 import time
 
 def make_rect(size, idx):
@@ -55,13 +55,20 @@ class StatesManager:
 
 # ZoneManager: 영역 상태 관리
 class ZoneManager:
-    def __init__(self, zones, bg):
+    def __init__(self, zones, bg, map_name="floor1"):
         self.zones = zones
         self.bg = bg
-        # self.world = gfw.top().world
+        self.current_map = map_name  # 현재 관리 중인 맵 이름
 
+    def update_current_map(self, map_name):
+        """현재 활성화된 맵을 업데이트"""
+        self.current_map = map_name
 
     def update_zone_status(self, x, y):
+        # 현재 맵이 ZoneManager의 맵과 다르면 동작하지 않음
+        if gfw.top().world.map_name != self.current_map:
+            return False
+
         for zone_name, zone_data in self.zones.items():
             (left, bottom), (right, top) = zone_data['range']
             if left <= x <= right and bottom <= y <= top:
@@ -115,7 +122,17 @@ class ZoneManager:
                     world.append(new_bg, world.layer.bg)
 
                     print("포탈을 통해 새로운 맵으로 이동했습니다!")
+
+                    world = gfw.top().world
+                    # DemonGen 인스턴스 생성 및 참조 저장
+                    gen_instance = BossGen()
+                    world.append(gen_instance, world.layer.controller)
+
+                    # 새로운 맵으로 이동했으므로 ZoneManager 비활성화
+                    self.update_current_map("boss_map")  # 맵 이름 갱신
                     return True
+
+        return False    
 
 
 class Knight(SheetSprite):
@@ -223,8 +240,8 @@ class Knight(SheetSprite):
 
         # ZoneManager를 사용해 구역 상태를 관리
         if self.zone_manager.update_zone_status(self.x, self.y) == True:
+            self.x, self.y = 500,0
             self.bg = gfw.top().world.bg  # 새로운 배경으로 업데이트
-
 
         self.y = clamp(self.bg.margin, self.y, self.bg.total_height() - self.bg.margin)
 
@@ -283,8 +300,8 @@ class Knight(SheetSprite):
         screen_pos = self.bg.to_screen(self.x, self.y)
 
         # 좌표 출력
-        print(f"World Position: (x: {self.x}, y: {self.y})")
-        print(f"Screen Position: {screen_pos}")
+        # print(f"World Position: (x: {self.x}, y: {self.y})")
+        # print(f"Screen Position: {screen_pos}")
 
         # 좌우 반전 여부에 따라 그리기
         flip_scale = -1 if self.flip else 1

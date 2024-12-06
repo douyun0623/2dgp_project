@@ -29,7 +29,6 @@ def enter():
     # world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
 
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
-    # world.bg = MapBackground('res/map/boss.tmj', tilesize=50)
     world.bg.margin = 210
     world.bg.x = 1400
     world.bg.set_collision_tiles({2})
@@ -42,7 +41,6 @@ def enter():
 
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
-
 
     # world.append(DemonGen(), world.layer.controller)
     world.append(CollisionChecker(), world.layer.controller)

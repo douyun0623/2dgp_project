@@ -3,10 +3,13 @@ import gfw
 from functools import reduce
 import pickle
 import os
+from gfw.gobj import *
 
 class World:
     def __init__(self, layer_count=1):
         if isinstance(layer_count, list):
+            self.map_name = "floor1"  # 초기 맵 이름
+            self.bg = None
             layer_names = layer_count
             layer_count = len(layer_count)
             index = 0
@@ -16,6 +19,19 @@ class World:
                 index += 1
 
         self.objects = [[] for i in range(layer_count)]
+
+    def change_map(self, new_map_name, new_bg_path):
+        """맵을 변경하고 관련 데이터 초기화"""
+        self.map_name = new_map_name
+        if self.bg in self.objects[self.layer.bg]:
+            self.remove(self.bg, self.layer.bg)
+
+        self.bg = MapBackground(new_bg_path, tilesize=50)
+        self.bg.set_collision_tiles({2})
+        self.append(self.bg, self.layer.bg)
+
+        print(f"현재 맵 변경: {new_map_name}")
+
     def append(self, go, layer_index=None):
         if layer_index is None:
             layer_index = go.layer_index

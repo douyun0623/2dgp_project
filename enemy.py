@@ -24,6 +24,7 @@ class Demon(AnimSprite):
         self.stun_timer = 0
         self.score = self.info.score
         self.is_dead = False  # 죽음 상태 추가
+        self.attack_chosen = False  # 공격 선택 여부를 추적하는 변수 추가
         self.dead_timer = 0.0  # 사라지기까지 대기 시간
 
         world = gfw.top().world
@@ -68,6 +69,24 @@ class Demon(AnimSprite):
     def is_dead(self):
         return self.life <= 0
 
+    def attack(self):
+        if not self.attack_chosen:
+            # attack2가 frame_info에 존재하는지 확인
+            if 'attack2' in self.info.frame_info:
+                # attack1과 attack2 중 하나를 랜덤 선택
+                action = random.choice(['attack', 'attack2'])
+            else:
+                # attack2가 없으면 attack1으로 설정
+                action = 'attack'
+            
+            self.state = action  # 상태를 문자열로 설정
+            self.set_anim(action)
+            self.attack_chosen = True  # 공격을 한 번 선택했으므로 이후에는 변경되지 않음
+        else:
+            # 공격이 진행 중일 때는 상태 변경을 하지 않음
+            pass
+
+
     def update(self):
         if self.check_stun():
             return
@@ -92,12 +111,14 @@ class Demon(AnimSprite):
             self.flip = 'h' if dx > 0 else ''
         else:
             self.is_attack = True
-            self.set_anim('attack')
+            self.attack()
+            # self.set_anim('attack2')
 
         # 공격하는 상태의 마지막 프레임 일때, 플레이어 위치와와 enemy의 위체에서 공격사거리와 겹치면 플에이어에게 데미지를 주고 싶다.
-        if self.state == 'attack' and self.get_anim_index() == self.info.frame_info['attack']['frames'] - 1:  # 공격하는 상태에고, 
+        if self.state in ['attack', 'attack2'] and self.get_anim_index() == self.info.frame_info['attack']['frames'] - 1:  # 공격하는 상태에고, 
             self.set_anim('idle')
             self.is_attack = False
+            self.attack_chosen = False  # 공격 후 공격 선택을 다시 할 수 있도록 리셋
             if dist <= self.info.attackRange:   
                 if player.is_invincible:    # 무적
                     print(f"플레이어 무적상태! 현재 HP: {player.hp}")
@@ -153,7 +174,6 @@ class Demon(AnimSprite):
 
         # 좌표를 출력하여 확인
         # print(f"Drawing at position: {self.x}, {self.y}")
-
 
     def get_bb(self):
         # 기존 bbox에서 오프셋 값 가져오기
@@ -234,7 +254,7 @@ INFO = [
         clazz=Demon,
         file='res/monster/red_orc_warrior.png',
         frame_info={
-            'idle': {'frames': 6, 'start_pos': (0, 1245 - 216), 'frame_size': (72, 74)},
+            'idle': {'frames': 6, 'start_pos': (0, 1245 - 223), 'frame_size': (72, 74)},
             'attack': {'frames': 4, 'start_pos': (0, 1245 - 648), 'frame_size': (103, 89)},
             'stunned': {'frames': 5, 'start_pos': (0, 1245 - 314), 'frame_size': (78, 73)},
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
@@ -253,7 +273,7 @@ INFO = [
         file='res/monster/black_dragon.png',
         frame_info={
             'idle': {'frames': 6, 'start_pos': (0, 1857 - 216), 'frame_size': (140, 113)},
-            'attack11': {'frames': 12, 'start_pos': (0, 1857 - 965), 'frame_size': (172, 146)},
+            'attack2': {'frames': 12, 'start_pos': (0, 1857 - 965), 'frame_size': (172, 146)},
             'stunned': {'frames': 15, 'start_pos': (0, 1857 - 444), 'frame_size': (138, 113)},
             'dead': {'frames': 10, 'start_pos': (0, 1857 - 688), 'frame_size': (145, 140)},  # 사망시 이미지
             'attack': {'frames': 12, 'start_pos': (0, 1857 - 1258), 'frame_size': (160, 141)}
@@ -294,13 +314,12 @@ def position_within_bounds(zone):
     return x, y
 
 class DemonGen:
-    def __init__(self, l,b,r,t, enemy_count):
+    def __init__(self, l, b , r , t, enemy_count):
         self.zone = {'l' : l, 'b' : b, 'r' : r,'t' : t}
         for _ in range(enemy_count):
-            self.gen_boss()
+            self.gen()
 
     def draw(self): pass
-
     def gen(self):
         type = random.randrange(len(INFO))
         if type == 1:
@@ -313,22 +332,19 @@ class DemonGen:
             return
         world = gfw.top().world
         world.append(demon)
+    def update(self): pass
 
+class BossGen:
+    def __init__(self):
+        self.gen_boss()
+    def draw(self): pass
     def gen_boss(self):
         type = 3
         info = INFO[type]
-        # x, y = 3771, 910 # 위치 지정해줘야함
-        x, y = position_within_bounds(self.zone)
+        x, y = 1000, 910 # 위치 지정해줘야함
         demon = info.clazz(type, x, y)
         if demon.is_on_obstacle():
             return
         world = gfw.top().world
         world.append(demon)
-
-
-    def update(self):
-        pass
-        # world = gfw.top().world
-        # if world.count_at(world.layer.enemy) == 0:
-        #     print(f"남은 적 없음")
-        
+    def update(self): pass
