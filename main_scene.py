@@ -8,7 +8,7 @@ world = gfw.World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 
 canvas_width = 1152  # 1280
 canvas_height = 648  # 720
-shows_bounding_box = False
+shows_bounding_box = True
 shows_object_count = True
 
 knight_info = {

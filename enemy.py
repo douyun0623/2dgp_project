@@ -145,17 +145,24 @@ class Demon(AnimSprite):
         # 현재 상태에 맞는 프레임 정보를 가져옵니다.
         bg = gfw.top().world.bg
         screen_pos = bg.to_screen(self.x, self.y)
+
+        # 체력바
         gx, gy = screen_pos
-        self.gauge.draw(gx, gy + 40, 100, self.life / self.max_life) # self.width - 100
+
+        dy = 60
+        dw = 100
+        if self.type == 3:
+            dy = 100
+            dw = 200
+
+        self.gauge.draw(gx, gy + dy, dw, self.life / self.max_life) # self.width - 100
+
 
         frame_info = self.info.frame_info[self.state]
 
         index = self.get_anim_index()
         if self.state == 'dead' and self.is_dead:
             index = frame_info['frames'] - 1  # 마지막 프레임 고정
-
-        # 애니메이션 프레임 인덱스를 출력
-        # print(f"Drawing {self.state} frame {index}")
         
         # 각 프레임의 위치와 크기 정보
         l, b = frame_info['start_pos']
@@ -166,16 +173,7 @@ class Demon(AnimSprite):
         flip_scale = 1 if self.flip else -1  # self.is_flipped가 True일 때 좌우 반전, False일 때 정상
 
         # 이미지 그리기
-        self.image.clip_composite_draw(
-            l, b, w, h,  # 클립 영역
-            0,  # 회전 각도
-            'h',  # 수평 반전
-            *screen_pos,  # 그려질 위치
-            self.mag * w * flip_scale, self.mag * h  # 크기
-        )  
-
-        # 좌표를 출력하여 확인
-        # print(f"Drawing at position: {self.x}, {self.y}")
+        self.image.clip_composite_draw(l, b, w, h, 0, 'h', *screen_pos,self.mag * w * flip_scale, self.mag * h )  
 
     def get_bb(self):
         # 기존 bbox에서 오프셋 값 가져오기

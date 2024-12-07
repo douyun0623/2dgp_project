@@ -224,11 +224,11 @@ class Knight(SheetSprite):
             self.current_index = self.get_anim_index()
             if self.index == len(self.src_rects) - 1:  # 마지막 애니메이션 프레임
                 self.set_state(STATE_RUNNING)
-                self.is_invincible = False
 
         # 상태가 RUNNING일 때 처리
         elif self.state == STATE_RUNNING:
             dx, dy = 0, 0
+            self.is_invincible = False
             if self.key_state[SDLK_w]: dy += Knight.MOVE_SPEED * gfw.frame_time
             if self.key_state[SDLK_a]: dx -= Knight.MOVE_SPEED * gfw.frame_time
             if self.key_state[SDLK_s]: dy -= Knight.MOVE_SPEED * gfw.frame_time
