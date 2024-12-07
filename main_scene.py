@@ -2,10 +2,9 @@ from pico2d import *
 from gfw import *
 from enemy import Demon, DemonGen
 from player import Knight
-import game_end_scene
 
 
-world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
+world = gfw.World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 
 canvas_width = 1152  # 1280
 canvas_height = 648  # 720
@@ -58,7 +57,6 @@ def handle_event(e):
         return
 
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
-        gfw.push(game_end_scene)
         return True
 
     Knight.handle_event(e)

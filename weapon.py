@@ -21,7 +21,7 @@ class Bullet(Sprite):
         self.x, self.y = weapon_x, weapon_y
         INF = float('inf')
         nearest = min(demons, key=lambda d: INF if d.is_stunned() else (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
-        if nearest.is_stunned(): return False
+        # if nearest.is_stunned(): return False
         self.angle = math.atan2(nearest.y - self.y, nearest.x - self.x)
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed
@@ -62,7 +62,7 @@ class Bullet(Sprite):
         return self.x-r, self.y-r, self.x+r, self.y+r
 
 class AK47(AnimSprite):
-    COOL_TIME = 0.5
+    COOL_TIME = 0.0
     def __init__(self, player):
         super().__init__(f'res/gun/AK47_Sprite.png', player.x, player.y, 7, 12)
         self.player = player

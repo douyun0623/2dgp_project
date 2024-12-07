@@ -6,9 +6,9 @@ import game_end_scene
 # from map_helper import *
 
 class Demon(AnimSprite):
-    STUN_DURATION = 1.5
+    STUN_DURATION = 1.0
     STEP_BACK_TILL = STUN_DURATION - 0.2
-    DEAD_DURATION = 2.0
+    DEAD_DURATION = 1.0
     def __init__(self, type, x, y):
         self.type = type
         self.info = INFO[self.type]
@@ -98,7 +98,8 @@ class Demon(AnimSprite):
             self.dead_timer -= gfw.frame_time
             if self.dead_timer <= 0:
                 self.is_remove = True
-                gfw.change(game_end_scene)
+                if(self.type == 3):
+                    gfw.change(game_end_scene)
             return
 
         world = gfw.top().world
@@ -333,7 +334,12 @@ class DemonGen:
         if demon.is_on_obstacle():
             return
         world = gfw.top().world
-        world.append(demon)
+        # demon.layer_index = demon.layer_index if hasattr(demon, 'layer_index') else 0  # 기본값 0 설정
+        # world.append(demon)
+        world.append(demon, world.layer.enemy)
+
+
+
     def update(self): pass
 
 class BossGen:
