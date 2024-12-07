@@ -17,12 +17,17 @@ class Bullet(Sprite):
     def fire(self, weapon_x, weapon_y):
         world = gfw.top().world
         if world.count_at(world.layer.enemy) == 0: return False
-        demons = world.objects_at(world.layer.enemy)
+
+        # demons = world.objects_at(world.layer.enemy)
+
+        demons = [d for d in world.objects_at(world.layer.enemy) if not d.state == 'dead']  # 살아있는 적만 필터링
+        if not demons:  # 살아있는 적이 없다면
+            return False
+
         self.x, self.y = weapon_x, weapon_y
         INF = float('inf')
-        # nearest = min(demons, key=lambda d: INF if d.is_stunned() else (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
+
         nearest = min(demons, key=lambda d: (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
-        # if nearest.is_stunned(): return False
         self.angle = math.atan2(nearest.y - self.y, nearest.x - self.x)
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed

@@ -30,7 +30,7 @@ types = {
 
 # 구역 정보 (좌표 범위 및 상태)
 zones = {
-    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
+    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 5},
     'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
     'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
     'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
