@@ -8,7 +8,7 @@ world = gfw.World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 
 canvas_width = 1152  # 1280
 canvas_height = 648  # 720
-shows_bounding_box = True
+shows_bounding_box = False
 shows_object_count = True
 
 knight_info = {
@@ -57,7 +57,7 @@ def handle_event(e):
         return
 
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
-        return True
+        return 0
 
     Knight.handle_event(e)
 

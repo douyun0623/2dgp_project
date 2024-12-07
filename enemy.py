@@ -23,11 +23,13 @@ class Demon(AnimSprite):
         self.mag = 2  # 이미지 크기를 배 확대
         self.max_life = self.info.life
         self.life = self.max_life
+        self.gauge = Gauge(f'res/gauge_fg.png', 'res/gauge_bg.png')
         self.stun_timer = 0
         self.score = self.info.score
         self.is_dead = False  # 죽음 상태 추가
         self.attack_chosen = False  # 공격 선택 여부를 추적하는 변수 추가
         self.dead_timer = 0.0  # 사라지기까지 대기 시간
+
 
         world = gfw.top().world
         self.player = world.objects_at(world.layer.player)   # 플레이어의 위치 가져옴
@@ -143,6 +145,8 @@ class Demon(AnimSprite):
         # 현재 상태에 맞는 프레임 정보를 가져옵니다.
         bg = gfw.top().world.bg
         screen_pos = bg.to_screen(self.x, self.y)
+        gx, gy = screen_pos
+        self.gauge.draw(gx, gy + 40, 100, self.life / self.max_life) # self.width - 100
 
         frame_info = self.info.frame_info[self.state]
 
@@ -150,20 +154,15 @@ class Demon(AnimSprite):
         if self.state == 'dead' and self.is_dead:
             index = frame_info['frames'] - 1  # 마지막 프레임 고정
 
-
         # 애니메이션 프레임 인덱스를 출력
         # print(f"Drawing {self.state} frame {index}")
         
         # 각 프레임의 위치와 크기 정보
         l, b = frame_info['start_pos']
         w, h = frame_info['frame_size']
-
         # 각 프레임의 정확한 위치 계산 (index에 따른 x 위치)
         l = frame_info['start_pos'][0] + index * w
-        
-        
-        # 이미지를 그릴 위치
-        # screen_pos = (self.x, self.y)
+
         flip_scale = 1 if self.flip else -1  # self.is_flipped가 True일 때 좌우 반전, False일 때 정상
 
         # 이미지 그리기
