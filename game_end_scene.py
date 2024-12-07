@@ -25,7 +25,6 @@ def draw():
 def update():
     pass
 
-
 if __name__ == '__main__':
     gfw.start_main_module()
 

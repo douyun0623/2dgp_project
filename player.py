@@ -7,7 +7,7 @@ import time
 
 def make_rect(size, idx):
     x, y = idx % 100, idx // 100
-    return (x * (size ) , y * (size ), size, size)
+    return (x * (size) + 1, y * (size), size, size)
 
 def make_rects(size, idxs):
     return list(map(lambda idx: make_rect(size, idx), idxs))
@@ -171,6 +171,7 @@ class Knight(SheetSprite):
         # 무기 추가
         self.weapon = Weapons(self)
         self.weapon.append(AK47(self))
+        # self.weapon.append(Bazooka(self))
 
     def move_portal(self):
          # 3380, 3756
@@ -308,7 +309,7 @@ class Knight(SheetSprite):
         # 좌우 반전 여부에 따라 그리기
         flip_scale = -1 if self.flip else 1
 
-        self.image.clip_composite_draw(l, b, w, h, 0, 'h', *screen_pos, self.mag * w * flip_scale, self.mag * h)   
+        self.image.clip_composite_draw(l + 1, b + 2, w - 2, h - 2, 0, 'h', *screen_pos, self.mag * w * flip_scale, self.mag * h)   
 
 if __name__ == '__main__':
     open_canvas()

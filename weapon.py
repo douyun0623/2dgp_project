@@ -18,8 +18,6 @@ class Bullet(Sprite):
         world = gfw.top().world
         if world.count_at(world.layer.enemy) == 0: return False
 
-        # demons = world.objects_at(world.layer.enemy)
-
         demons = [d for d in world.objects_at(world.layer.enemy) if not d.state == 'dead']  # 살아있는 적만 필터링
         if not demons:  # 살아있는 적이 없다면
             return False
@@ -52,14 +50,8 @@ class Bullet(Sprite):
     def try_hit(self, obj): # returns False if obj is removed
         if not gfw.collides_box(self, obj):
             return False
-        # if obj.is_stunned():
-        #     return False
 
         dead = obj.hit(self.power)
-
-        # if dead and obj.is_remove == True:
-        #     main_scene = gfw.top()
-        #     main_scene.world.remove(obj)
 
         self.reset()
         return dead
@@ -67,19 +59,86 @@ class Bullet(Sprite):
         r = 12 # radius
         return self.x-r, self.y-r, self.x+r, self.y+r
 
-class AK47(AnimSprite):
+class Weapon(AnimSprite):
     COOL_TIME = 0.0
-    def __init__(self, player):
-        super().__init__(f'res/gun/AK47_Sprite.png', player.x, player.y, 7, 12)
+
+    def __init__(self, player, bullet_img, power, speed, bullet_count, fps = 10, sprite_img=None, frame_count=1):
+        self.frame_count = frame_count
+        super().__init__(sprite_img, 0, 0, fps, self.frame_count)
         self.player = player
         self.bullets = []
-        self.power = 25
-        self.speed = 200
+        self.power = power
+        self.speed = speed
         self.cooldown = 0.0
-        self.is_firing = False  # 발사 상태를 추적
-        self.index = 0
-        for _ in range(6):
-            self.append()
+        self.is_firing = False
+        self.sprite_img = sprite_img
+        self.image = load_image(sprite_img) if sprite_img else None
+        self.width, self.height = (self.image.w // frame_count, self.image.h) if self.image else (0, 0)
+        for _ in range(bullet_count):
+            self.append_bullet(bullet_img)
+
+    def append_bullet(self, bullet_img):
+        bullet = Bullet(self.player, bullet_img, self.power, self.speed)
+        self.bullets.append(bullet)
+
+    def get_pos(self):
+        raise NotImplementedError("get_pos() must be implemented in subclasses")
+
+    def get_bullet_pos(self):
+        raise NotImplementedError("get_bullet_pos() must be implemented in subclasses")
+
+    def fire(self):
+        if self.cooldown > 0:
+            return
+        for b in self.bullets:
+            if not b.valid:
+                bullet_x, bullet_y = self.get_bullet_pos()
+                fired = b.fire(bullet_x, bullet_y)
+                if fired:
+                    self.cooldown = self.COOL_TIME
+                    self.is_firing = True
+                    self.created_on = time.time()
+                return
+
+    def update(self):
+        if self.cooldown > 0:
+            self.cooldown -= gfw.frame_time
+
+        for b in self.bullets:
+            if b.valid:
+                b.update()
+
+    def draw(self):
+        if self.sprite_img:
+            bg = self.player.bg
+            self.get_pos()
+            screen_pos = bg.to_screen(self.x, self.y)
+
+            index = 0
+            if self.is_firing:
+                index = self.get_anim_index()
+                if index ==  self.frame_count - 1:
+                    self.is_firing = False
+
+            flip_scale = '' if self.player.flip else 'h'
+            self.image.clip_composite_draw(index * self.width, 0, self.width, self.height, 0, flip_scale, *screen_pos, self.width, self.height)
+
+        for b in self.bullets:
+            if b.valid:
+                b.draw()
+
+    def try_hit(self, obj):
+        for b in self.bullets:
+            if b.valid and b.try_hit(obj):
+                return True
+        return False
+
+
+class AK47(Weapon):
+    COOL_TIME = 0.1
+
+    def __init__(self, player):
+        super().__init__(player, f'res/gun/AK47_Bullet.png', power=25, speed=400, bullet_count=1, fps = 10, sprite_img=f'res/gun/AK47_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:
@@ -88,63 +147,34 @@ class AK47(AnimSprite):
         else:
             self.x = self.player.x - 25
             self.y = self.player.y - 80
+
     def get_bullet_pos(self):
         if self.player.flip:
             return self.x + 35, self.y + 10
         else:
             return self.x - 35, self.y + 10
-    def append(self):
-        bullet = Bullet(self.player, f'res/gun/AK47_Bullet.png', self.power, self.speed)
-        self.bullets.append(bullet) # 총알 이미지 추가
-    def fire(self):  # fire() 메서드 추가
-        if self.cooldown > 0:  # 쿨타임이 남아 있으면 발사하지 않음
-            return
-        # 발사할 총알이 준비되었는지 확인하고 발사
-        for b in self.bullets:
-            if not b.valid:  # 총알이 발사되지 않은 상태일 때
-                bullet_x, bullet_y = self.get_bullet_pos()  # 총알 발사 위치 얻기
-                fired = b.fire(bullet_x, bullet_y)  # 총알을 발사
-                if fired:
-                    self.time = self.COOL_TIME  # 발사 후 쿨타임 초기화
-                    self.is_firing = True
-                return
-    def update(self):
-        # 쿨타임 감소 처리
-        if self.cooldown > 0:
-            self.cooldown -= gfw.frame_time
-
-        # 발사 상태라면 애니메이션 프레임 업데이트
-        if self.is_firing:
-            self.index += 1
-            if self.index >= 12:  # 애니메이션 마지막 프레임에 도달하면 초기화
-                self.index = 0
-                self.is_firing = False  # 발사 상태 해제
 
 
-        for b in self.bullets: 
-            if b.valid:  # 이미 발사된 총알만 업데이트
-                b.update()
+class Bazooka(Weapon):
+    COOL_TIME = 0.1
 
-    def draw(self):
-        bg = self.player.bg
-        self.get_pos()
-        screen_pos = bg.to_screen(self.x, self.y)
+    def __init__(self, player):
+        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=40, speed=200, bullet_count=6, fps = 10, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
 
-        # 디버깅을 위해 index와 화면 좌표를 출력해봄
-        # print(f"Anim Index: {self.index}, Screen Pos: {screen_pos}")
-        
-        # 좌우 반전 여부에 따라 그리기
-        flip_scale = '' if self.player.flip else 'h'
-        self.image.clip_composite_draw(self.index * self.width, 0, self.width, self.height, 0, flip_scale, *screen_pos, self.width, self.height)
+    def get_pos(self):
+        if self.player.flip:
+            self.x = self.player.x + 25
+            self.y = self.player.y - 80
+        else:
+            self.x = self.player.x - 25
+            self.y = self.player.y - 80
 
-        for b in self.bullets: 
-            if b.valid: b.draw()
+    def get_bullet_pos(self):
+        if self.player.flip:
+            return self.x + 35, self.y + 10
+        else:
+            return self.x - 35, self.y + 10
 
-    def try_hit(self, obj):
-        for b in self.bullets:
-            if b.valid and b.try_hit(obj):
-                return True
-        return False
 
 class Weapons:
     def __init__(self, player):
