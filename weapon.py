@@ -3,12 +3,12 @@ from gfw import *
 import time
 
 class Bullet(Sprite):
-    def __init__(self, player, fg_fname, power, speed):
+    def __init__(self, player, fg_fname, power, speed, mag):
         super().__init__(fg_fname, -100, -100)
         self.player = player
         self.power = power
         self.speed = speed  # 총알 속도
-        self.mag = 3  # 크기 배율을 설정
+        self.mag = mag  # 크기 배율을 설정
         self.angle = 0
         self.dx, self.dy = 0, 0
         self.reset()
@@ -62,13 +62,14 @@ class Bullet(Sprite):
 class Weapon(AnimSprite):
     COOL_TIME = 0.0
 
-    def __init__(self, player, bullet_img, power, speed, bullet_count, fps = 10, sprite_img=None, frame_count=1):
+    def __init__(self, player, bullet_img, power, speed, bullet_count,bullet_mag, fps = 10, sprite_img=None, frame_count=1):
         self.frame_count = frame_count
         super().__init__(sprite_img, 0, 0, fps, self.frame_count)
         self.player = player
         self.bullets = []
         self.power = power
         self.speed = speed
+        self.bullet_mag = bullet_mag
         self.cooldown = 0.0
         self.is_firing = False
         self.sprite_img = sprite_img
@@ -78,7 +79,7 @@ class Weapon(AnimSprite):
             self.append_bullet(bullet_img)
 
     def append_bullet(self, bullet_img):
-        bullet = Bullet(self.player, bullet_img, self.power, self.speed)
+        bullet = Bullet(self.player, bullet_img, self.power, self.speed, self.bullet_mag)
         self.bullets.append(bullet)
 
     def get_pos(self):
@@ -138,7 +139,7 @@ class AK47(Weapon):
     COOL_TIME = 0.1
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/AK47_Bullet.png', power=25, speed=400, bullet_count=1, fps = 10, sprite_img=f'res/gun/AK47_Sprite.png', frame_count=12)
+        super().__init__(player, f'res/gun/AK47_Bullet.png', power=25, speed=400, bullet_count=1,bullet_mag = 3, fps = 10, sprite_img=f'res/gun/AK47_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:
@@ -159,7 +160,7 @@ class Bazooka(Weapon):
     COOL_TIME = 0.1
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=40, speed=200, bullet_count=6, fps = 10, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
+        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=40, speed=200, bullet_count=6,bullet_mag = 2, fps = 10, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
 
     def get_pos(self):
         if self.player.flip:
@@ -177,19 +178,41 @@ class Bazooka(Weapon):
 
 
 class Weapons:
+    # def __init__(self, player):
+    #     self.weapons = []
+    # def append(self, weapon):
+    #     self.weapons.append(weapon)
+    # def update(self):
+    #     for w in self.weapons: w.update()
+    # def draw(self):
+    #     for w in self.weapons: w.draw()
+    # def try_hit(self, obj):
+    #     for w in self.weapons:
+    #          if w.try_hit(obj):
+    #             return True
+    #     return False
+    # def attack(self):
+    #     for weapon in self.weapons:
+    #         weapon.fire()  # 각 무기의 fire 메서드 호출
+
     def __init__(self, player):
-        self.weapons = []
-    def append(self, weapon):
-        self.weapons.append(weapon)
+        self.player = player
+        self.weapon_list = [AK47(player), Bazooka(player)]  # 무기 추가
+        self.current_weapon_index = 0  # 현재 장착된 무기의 인덱스
+        self.weapon = self.weapon_list[self.current_weapon_index]  # 현재 장착된 무기
+
     def update(self):
-        for w in self.weapons: w.update()
+        self.weapon.update()
+
     def draw(self):
-        for w in self.weapons: w.draw()
+        self.weapon.draw()
+
     def try_hit(self, obj):
-        for w in self.weapons:
-             if w.try_hit(obj):
-                return True
-        return False
+        return self.weapon.try_hit(obj)
+
     def attack(self):
-        for weapon in self.weapons:
-            weapon.fire()  # 각 무기의 fire 메서드 호출
+        self.weapon.fire()
+
+    def switch_weapon(self):
+        self.current_weapon_index = (self.current_weapon_index + 1) % len(self.weapon_list)
+        self.weapon = self.weapon_list[self.current_weapon_index]

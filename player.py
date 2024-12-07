@@ -170,8 +170,19 @@ class Knight(SheetSprite):
 
         # 무기 추가
         self.weapon = Weapons(self)
-        self.weapon.append(AK47(self))
+        # self.weapon.append(AK47(self))
         # self.weapon.append(Bazooka(self))
+
+        # 무기 추가
+        # self.weapon_list = [AK47(self), Bazooka(self)]  # 사용할 무기 리스트
+        # self.current_weapon_index = 0  # 현재 장착된 무기의 인덱스
+        # self.weapon = self.weapon_list[self.current_weapon_index]  # 현재 장착된 무기
+
+    def swap_weapon(self):
+        """무기를 다음 무기로 교체"""
+        self.current_weapon_index = (self.current_weapon_index + 1) % len(self.weapon_list)
+        self.weapon = self.weapon_list[self.current_weapon_index]
+        print(f"무기 변경: {type(self.weapon).__name__}")
 
     def move_portal(self):
          # 3380, 3756
@@ -195,6 +206,8 @@ class Knight(SheetSprite):
                 self.bg.set_collision_tiles({})
             if e.key == SDLK_k:  # 'k' 키를 누르면 총알 발사
                 self.weapon.attack()
+            if e.key == SDLK_l:  # 'L' 키를 누르면 무기를 변경
+                self.weapon.switch_weapon()
 
         elif e.type == SDL_KEYUP:
             if e.key in self.key_state:
