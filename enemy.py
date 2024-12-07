@@ -2,6 +2,7 @@ import math
 import random
 from pico2d import * 
 from gfw import *
+import game_end_scene
 # from map_helper import *
 
 class Demon(AnimSprite):
@@ -9,7 +10,8 @@ class Demon(AnimSprite):
     STEP_BACK_TILL = STUN_DURATION - 0.2
     DEAD_DURATION = 2.0
     def __init__(self, type, x, y):
-        self.info = INFO[type]
+        self.type = type
+        self.info = INFO[self.type]
         frame_count = self.info.frame_info['idle']['frames']
         super().__init__(self.info.file, x, y, random.uniform(8, 10), frame_count)
         self.layer_index = gfw.top().world.layer.enemy
@@ -96,6 +98,7 @@ class Demon(AnimSprite):
             self.dead_timer -= gfw.frame_time
             if self.dead_timer <= 0:
                 self.is_remove = True
+                gfw.change(game_end_scene)
             return
 
         world = gfw.top().world
@@ -112,7 +115,6 @@ class Demon(AnimSprite):
         else:
             self.is_attack = True
             self.attack()
-            # self.set_anim('attack2')
 
         # 공격하는 상태의 마지막 프레임 일때, 플레이어 위치와와 enemy의 위체에서 공격사거리와 겹치면 플에이어에게 데미지를 주고 싶다.
         if self.state in ['attack', 'attack2'] and self.get_anim_index() == self.info.frame_info['attack']['frames'] - 1:  # 공격하는 상태에고, 
@@ -321,7 +323,7 @@ class DemonGen:
 
     def draw(self): pass
     def gen(self):
-        type = random.randrange(len(INFO))
+        type = random.randrange(0, 3)
         if type == 1:
             x, y = position_somewhere_outside_screen()
         else:

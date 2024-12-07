@@ -2,8 +2,8 @@ from pico2d import *
 from gfw import *
 from enemy import Demon, DemonGen
 from player import Knight
+import game_end_scene
 
-#import pause_scene
 
 world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 
@@ -31,6 +31,7 @@ def enter():
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
     world.bg.margin = 210
     world.bg.x = 1400
+    world.map_name = "floor1"
     world.bg.set_collision_tiles({2})
     world.append(world.bg, world.layer.bg)
     
@@ -47,13 +48,9 @@ def enter():
 def exit():
     world.clear()
 
-def pause():
-    print('[main.pause()]')
-    music.pause()
+def pause(): pass
 
-def resume():
-    print('[main.resume()]')
-    music.resume()
+def resume(): pass
 
 def handle_event(e):
     if e.type == SDL_KEYDOWN and e.key == SDLK_1:
@@ -61,8 +58,7 @@ def handle_event(e):
         return
 
     if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
-        return 0
-        #gfw.push(pause_scene)
+        gfw.push(game_end_scene)
         return True
 
     Knight.handle_event(e)

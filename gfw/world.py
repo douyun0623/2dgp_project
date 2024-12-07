@@ -9,7 +9,7 @@ class World:
     def __init__(self, layer_count=1):
         if isinstance(layer_count, list):
             self.map_name = "floor1"  # 초기 맵 이름
-            self.bg = None
+            # self.bg = None
             layer_names = layer_count
             layer_count = len(layer_count)
             index = 0
@@ -39,7 +39,10 @@ class World:
     def remove(self, go, layer_index=None):
         if layer_index is None:
             layer_index = go.layer_index
-        self.objects[layer_index].remove(go)
+        # self.objects[layer_index].remove(go)
+
+        if go in self.objects[layer_index]:
+            self.objects[layer_index].remove(go)
     def clear(self):
         layer_count = len(self.objects)
         self.objects = [[] for i in range(layer_count)]

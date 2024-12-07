@@ -46,8 +46,8 @@ class Bullet(Sprite):
     def try_hit(self, obj): # returns False if obj is removed
         if not gfw.collides_box(self, obj):
             return False
-        if obj.is_stunned():
-            return False
+        # if obj.is_stunned():
+        #     return False
 
         dead = obj.hit(self.power)
 
@@ -62,7 +62,7 @@ class Bullet(Sprite):
         return self.x-r, self.y-r, self.x+r, self.y+r
 
 class AK47(AnimSprite):
-    COOL_TIME = 1.0
+    COOL_TIME = 0.5
     def __init__(self, player):
         super().__init__(f'res/gun/AK47_Sprite.png', player.x, player.y, 7, 12)
         self.player = player
@@ -72,7 +72,9 @@ class AK47(AnimSprite):
         self.cooldown = 0.0
         self.is_firing = False  # 발사 상태를 추적
         self.index = 0
-        self.append()
+        for _ in range(6):
+            self.append()
+
     def get_pos(self):
         if self.player.flip:
             self.x = self.player.x + 25
@@ -92,8 +94,6 @@ class AK47(AnimSprite):
         if self.cooldown > 0:  # 쿨타임이 남아 있으면 발사하지 않음
             return
         # 발사할 총알이 준비되었는지 확인하고 발사
-
-        
         for b in self.bullets:
             if not b.valid:  # 총알이 발사되지 않은 상태일 때
                 bullet_x, bullet_y = self.get_bullet_pos()  # 총알 발사 위치 얻기

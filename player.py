@@ -4,6 +4,7 @@ from weapon import *
 from enemy import Demon, DemonGen, BossGen
 import time
 
+
 def make_rect(size, idx):
     x, y = idx % 100, idx // 100
     return (x * (size ) , y * (size ), size, size)
@@ -66,7 +67,8 @@ class ZoneManager:
 
     def update_zone_status(self, x, y):
         # 현재 맵이 ZoneManager의 맵과 다르면 동작하지 않음
-        if gfw.top().world.map_name != self.current_map:
+        if hasattr(gfw.top().world, 'map_name') and gfw.top().world.map_name != self.current_map:
+        # map_name이 존재하고 현재 맵 이름과 다를 경우 처리
             return False
 
         for zone_name, zone_data in self.zones.items():
