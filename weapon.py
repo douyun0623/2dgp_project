@@ -20,7 +20,8 @@ class Bullet(Sprite):
         demons = world.objects_at(world.layer.enemy)
         self.x, self.y = weapon_x, weapon_y
         INF = float('inf')
-        nearest = min(demons, key=lambda d: INF if d.is_stunned() else (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
+        # nearest = min(demons, key=lambda d: INF if d.is_stunned() else (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
+        nearest = min(demons, key=lambda d: (d.x - self.x) ** 2 + (d.y - self.y) ** 2)
         # if nearest.is_stunned(): return False
         self.angle = math.atan2(nearest.y - self.y, nearest.x - self.x)
         self.dx = math.cos(self.angle) * self.speed

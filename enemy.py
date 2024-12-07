@@ -47,11 +47,8 @@ class Demon(AnimSprite):
     def is_stunned(self):
         return self.stun_timer > 0
 
-    def hit(self, damage): #return True if dead
-        if self.stun_timer > 0:
-            return False
-        self.set_anim('stunned')
-        self.life -= damage
+    def hit(self, damage):  # return True if dead
+        self.life -= damage  # 항상 데미지를 감소시킴
         if self.life <= 0: 
             self.state = 'dead'
             self.is_dead = True
@@ -59,14 +56,19 @@ class Demon(AnimSprite):
             self.set_anim('dead')  # 죽음 애니메이션 설정
             return True
 
-        self.stun_timer = self.STUN_DURATION
-        world = gfw.top().world
-        player = world.object_at(world.layer.player, 0)
-        diff_x, diff_y = player.x - self.x, player.y - self.y
-        dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
-        waver_distance = 20
-        self.waver_x = -waver_distance * diff_x / dist
-        self.waver_y = -waver_distance * diff_y / dist
+        # 스턴 상태가 아닐 경우에만 추가로 스턴 처리
+        if self.stun_timer <= 0:
+            self.set_anim('stunned')
+            self.stun_timer = self.STUN_DURATION
+
+            # 플레이어와 거리 계산
+            world = gfw.top().world
+            player = world.object_at(world.layer.player, 0)
+            diff_x, diff_y = player.x - self.x, player.y - self.y
+            dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
+            waver_distance = 20
+            self.waver_x = -waver_distance * diff_x / dist
+            self.waver_y = -waver_distance * diff_y / dist
 
         return False
 
