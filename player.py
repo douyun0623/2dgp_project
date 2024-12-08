@@ -334,7 +334,7 @@ class Knight(SheetSprite):
         screen_pos = self.bg.to_screen(self.x, self.y)
 
         canvas_height = get_canvas_height()
-        gfw.font.draw_centered_text(self.font, 'hp', 20, canvas_height - 15, (63, 0, 0))
+        gfw.font.draw_centered_text(self.font, 'hp', 20, canvas_height - 15, (0, 0, 0))
 
         # hp
         canvas_height = get_canvas_height()

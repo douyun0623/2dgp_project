@@ -25,7 +25,7 @@ class CollisionChecker:
             Knight.weapon.try_hit(obj)
 
 def enter():
-    # world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
+    world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
 
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
     world.bg.margin = 210
@@ -38,7 +38,7 @@ def enter():
     Knight = Knight(knight_info, world.bg)
     world.append(Knight, world.layer.player)
     world.append(Knight.weapon, world.layer.weapon)
-    
+
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
 
