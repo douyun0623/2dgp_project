@@ -135,10 +135,10 @@ class Weapon(AnimSprite):
         return False
 
 class AK47(Weapon):
-    COOL_TIME = 0.1
+    COOL_TIME = 0.5
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/AK47_Bullet.png', power=25, speed=400, bullet_count=1,bullet_mag = 3, fps = 10, sprite_img=f'res/gun/AK47_Sprite.png', frame_count=12)
+        super().__init__(player, f'res/gun/AK47_Bullet.png', power=30, speed=400, bullet_count=3, bullet_mag = 3, fps = 20, sprite_img=f'res/gun/AK47_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:
@@ -155,10 +155,10 @@ class AK47(Weapon):
             return self.x - 35, self.y + 10
 
 class Bazooka(Weapon):
-    COOL_TIME = 0.1
+    COOL_TIME = 1.0
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=40, speed=200, bullet_count=6,bullet_mag = 2, fps = 10, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
+        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=100, speed=200, bullet_count=1,bullet_mag = 2, fps = 25, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
 
     def get_pos(self):
         if self.player.flip:
@@ -178,7 +178,7 @@ class MP5(Weapon):
     COOL_TIME = 0.1
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/MP5_Bullet.png', power=40, speed=400, bullet_count=10 ,bullet_mag = 3, fps = 10, sprite_img=f'res/gun/MP5_Sprite.png', frame_count=12)
+        super().__init__(player, f'res/gun/MP5_Bullet.png', power=10, speed=400, bullet_count=5 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/MP5_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:
@@ -195,18 +195,18 @@ class MP5(Weapon):
             return self.x - 35, self.y + 10
 
 class Revolver(Weapon):
-    COOL_TIME = 0.1
+    COOL_TIME = 0.7
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Revolver_Bullet.png', power=40, speed=400, bullet_count=6 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/Revolver_Sprite.png', frame_count=10)
+        super().__init__(player, f'res/gun/Revolver_Bullet.png', power=60, speed=400, bullet_count=6 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Revolver_Sprite.png', frame_count=10)
 
     def get_pos(self):
         if self.player.flip:
-            self.x = self.player.x + 25
-            self.y = self.player.y - 80
+            self.x = self.player.x + 35
+            self.y = self.player.y - 65
         else:
-            self.x = self.player.x - 25
-            self.y = self.player.y - 80
+            self.x = self.player.x - 35
+            self.y = self.player.y - 64
 
     def get_bullet_pos(self):
         if self.player.flip:
@@ -219,7 +219,7 @@ class Glock(Weapon):
     COOL_TIME = 0.1
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Glock_Bullet.png', power=40, speed=400, bullet_count=12 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/Glock_Sprite.png', frame_count=12)
+        super().__init__(player, f'res/gun/Glock_Bullet.png', power=5, speed=300, bullet_count=12 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Glock_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:

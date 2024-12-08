@@ -145,7 +145,7 @@ class Knight(SheetSprite):
     ROLLING_DURATION = 0.6
     MOVE_SPEED = 200  # 이동 속도 (픽셀/초)
     ROLL_SPEED = 400  # 구르기 시 이동 속도 (픽셀/초)
-
+    ROLL_COOLDOWN = 1.0  # 구르기 쿨타임 (초)
     def __init__(self, info, bg):
         super().__init__(f'res/knight_sheet.png', 80, 150, 8) #160, 500
         self.bg = bg
@@ -180,6 +180,9 @@ class Knight(SheetSprite):
 
         self.set_state(STATE_IDLE)
 
+        # 구르기
+        self.last_roll_time = 0  # 마지막 구르기 시간
+
         # 무기 추가
         self.weapon = Weapons(self)
         # self.weapon.append(AK47(self))
@@ -212,8 +215,11 @@ class Knight(SheetSprite):
             if e.key == SDLK_o:
                 self.move_portal()
             if e.key == SDLK_j:  # 구르기 실행
-                self.is_invincible = True
-                self.rolling()
+                current_time = time.time()
+                if current_time - self.last_roll_time >= Knight.ROLL_COOLDOWN:  # 쿨타임 확인
+                    self.is_invincible = True
+                    self.rolling()
+                    self.last_roll_time = current_time  # 구르기 시간 기록
             if e.key == SDLK_c:  # 모든 벽 이동할 수 있도록 함
                 self.bg.set_collision_tiles({})
             if e.key == SDLK_k:  # 'k' 키를 누르면 총알 발사

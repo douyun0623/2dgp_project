@@ -225,11 +225,11 @@ INFO = [
             'stunned': {'frames': 8, 'start_pos': (0, 1197 - 536), 'frame_size': (74, 73)},  # 한대 맞았을때
             'dead': {'frames': 3, 'start_pos': (0, 1197 - 650), 'frame_size': (72, 41)}  # 사망시 이미지
         },
-        speed=(80, 90),
+        speed=(150, 170),
         attackDamage=2,
         attackRange=80,
         bbox=(-15, -15, 15, 15),
-        life=60,
+        life=130,
         score=10,
     ),
 
@@ -243,7 +243,7 @@ INFO = [
             'stunned': {'frames': 8, 'start_pos': (0, 1773 - 752), 'frame_size': (74, 74)},
             'dead': {'frames': 5, 'start_pos': (0, 1773 - 914), 'frame_size': (85, 89)}  # 사망시 이미지
         },
-        speed=(40, 50),
+        speed=(100, 120),
         attackDamage=3,
         attackRange=80,
         bbox=(-28, -5, 8, 31),
@@ -261,11 +261,11 @@ INFO = [
             'stunned': {'frames': 5, 'start_pos': (0, 1245 - 314), 'frame_size': (78, 73)},
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
         },
-        speed=(50, 60),
+        speed=(130, 140),
         attackDamage=4,
         attackRange=70,
         bbox=(-25, -14, 25, 14),
-        life=100,
+        life=300,
         score=30,
     ),
 
@@ -280,11 +280,11 @@ INFO = [
             'dead': {'frames': 10, 'start_pos': (0, 1857 - 688), 'frame_size': (145, 140)},  # 사망시 이미지
             'attack': {'frames': 12, 'start_pos': (0, 1857 - 1258), 'frame_size': (160, 141)}
         },
-        speed=(50, 60),
+        speed=(160, 200),
         attackDamage=4,
         attackRange=150,
         bbox=(-25, -14, 25, 14),
-        life=100,
+        life=2000,
         score=30,
     ),
 ]
