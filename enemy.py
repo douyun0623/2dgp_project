@@ -351,5 +351,5 @@ class BossGen:
         if enemy.is_on_obstacle():
             return
         world = gfw.top().world
-        world.append(demon)
+        world.append(enemy)
     def update(self): pass

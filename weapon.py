@@ -134,7 +134,6 @@ class Weapon(AnimSprite):
                 return True
         return False
 
-
 class AK47(Weapon):
     COOL_TIME = 0.1
 
@@ -154,7 +153,6 @@ class AK47(Weapon):
             return self.x + 35, self.y + 10
         else:
             return self.x - 35, self.y + 10
-
 
 class Bazooka(Weapon):
     COOL_TIME = 0.1
@@ -176,28 +174,71 @@ class Bazooka(Weapon):
         else:
             return self.x - 35, self.y + 10
 
-
-class Weapons:
-    # def __init__(self, player):
-    #     self.weapons = []
-    # def append(self, weapon):
-    #     self.weapons.append(weapon)
-    # def update(self):
-    #     for w in self.weapons: w.update()
-    # def draw(self):
-    #     for w in self.weapons: w.draw()
-    # def try_hit(self, obj):
-    #     for w in self.weapons:
-    #          if w.try_hit(obj):
-    #             return True
-    #     return False
-    # def attack(self):
-    #     for weapon in self.weapons:
-    #         weapon.fire()  # 각 무기의 fire 메서드 호출
+class MP5(Weapon):
+    COOL_TIME = 0.1
 
     def __init__(self, player):
+        super().__init__(player, f'res/gun/MP5_Bullet.png', power=40, speed=400, bullet_count=10 ,bullet_mag = 3, fps = 10, sprite_img=f'res/gun/MP5_Sprite.png', frame_count=12)
+
+    def get_pos(self):
+        if self.player.flip:
+            self.x = self.player.x + 25
+            self.y = self.player.y - 80
+        else:
+            self.x = self.player.x - 25
+            self.y = self.player.y - 80
+
+    def get_bullet_pos(self):
+        if self.player.flip:
+            return self.x + 35, self.y + 10
+        else:
+            return self.x - 35, self.y + 10
+
+class Revolver(Weapon):
+    COOL_TIME = 0.1
+
+    def __init__(self, player):
+        super().__init__(player, f'res/gun/Revolver_Bullet.png', power=40, speed=400, bullet_count=6 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/Revolver_Sprite.png', frame_count=10)
+
+    def get_pos(self):
+        if self.player.flip:
+            self.x = self.player.x + 25
+            self.y = self.player.y - 80
+        else:
+            self.x = self.player.x - 25
+            self.y = self.player.y - 80
+
+    def get_bullet_pos(self):
+        if self.player.flip:
+            return self.x + 35, self.y + 10
+        else:
+            return self.x - 35, self.y + 10
+
+
+class Glock(Weapon):
+    COOL_TIME = 0.1
+
+    def __init__(self, player):
+        super().__init__(player, f'res/gun/Glock_Bullet.png', power=40, speed=400, bullet_count=12 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/Glock_Sprite.png', frame_count=12)
+
+    def get_pos(self):
+        if self.player.flip:
+            self.x = self.player.x + 25
+            self.y = self.player.y - 80
+        else:
+            self.x = self.player.x - 25
+            self.y = self.player.y - 80
+
+    def get_bullet_pos(self):
+        if self.player.flip:
+            return self.x + 35, self.y + 10
+        else:
+            return self.x - 35, self.y + 10            
+
+class Weapons:
+    def __init__(self, player):
         self.player = player
-        self.weapon_list = [AK47(player), Bazooka(player)]  # 무기 추가
+        self.weapon_list = [AK47(player), Bazooka(player), MP5(player), Revolver(player), Glock(player)]  # 무기 추가
         self.current_weapon_index = 0  # 현재 장착된 무기의 인덱스
         self.weapon = self.weapon_list[self.current_weapon_index]  # 현재 장착된 무기
 
