@@ -173,6 +173,8 @@ class Knight(SheetSprite):
 
         # 게이지
         self.gauge = Gauge(f'res/gauge_fg.png', 'res/gauge_bg.png')
+        self.roll_gauge = Gauge(f'res/gauge_fg2.png', 'res/gauge_bg.png')
+
 
         # 3380, 3756
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
@@ -345,6 +347,7 @@ class Knight(SheetSprite):
         # hp
         canvas_height = get_canvas_height()
         self.gauge.draw(90, canvas_height - 17, 100, self.life / self.max_life) 
+        self.roll_gauge.draw(90, canvas_height - 25, 100, max(0, Knight.ROLL_COOLDOWN - (time.time() - self.last_roll_time))  / Knight.ROLL_COOLDOWN)
 
         # 좌표 출력
         # print(f"World Position: (x: {self.x}, y: {self.y})")
