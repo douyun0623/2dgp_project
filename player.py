@@ -3,6 +3,7 @@ from gfw import *
 from weapon import *
 from enemy import Demon, DemonGen, BossGen
 import time
+import game_over_scene
 
 
 def make_rect(size, idx):
@@ -88,6 +89,7 @@ class ZoneManager:
                 elif zone_data['status'] == IS_STAGE_ACTIVE:
                     self.bg.set_collision_tiles({2, 43})
                     world = gfw.top().world
+                    # if hasattr(world.layer, 'enemy'):
                     if world.count_at(world.layer.enemy) == 0:
                         zone_data['status'] = IS_STAGE_COMPLETE
                         # DemonGen 인스턴스 제거
@@ -232,6 +234,10 @@ class Knight(SheetSprite):
         if self.check_idle():
             self.set_state(STATE_IDLE)
 
+        if self.life <= 0:
+            gfw.change(game_over_scene)
+            return
+
         # 현재 상태별 동작 처리
         if self.state == STATE_HURT:
             self.time += gfw.frame_time
@@ -277,6 +283,8 @@ class Knight(SheetSprite):
 
         # 배경을 화면에 그리기
         self.bg.show(self.bg.x, self.bg.y)
+
+
 
     def rolling(self):
         self.roll_dx, self.roll_dy = 0, 0

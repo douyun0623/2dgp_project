@@ -329,13 +329,11 @@ class DemonGen:
         else:
             x, y = position_within_bounds(self.zone)
         info = INFO[type]
-        demon = info.clazz(type, x, y)
-        if demon.is_on_obstacle():
+        enemy = info.clazz(type, x, y)
+        if enemy.is_on_obstacle():
             return
         world = gfw.top().world
-        # demon.layer_index = demon.layer_index if hasattr(demon, 'layer_index') else 0  # 기본값 0 설정
-        # world.append(demon)
-        world.append(demon, world.layer.enemy)
+        world.append(enemy) # , world.layer.enemy
 
 
 
@@ -349,8 +347,8 @@ class BossGen:
         type = 3
         info = INFO[type]
         x, y = 1000, 910 # 위치 지정해줘야함
-        demon = info.clazz(type, x, y)
-        if demon.is_on_obstacle():
+        enemy = info.clazz(type, x, y)
+        if enemy.is_on_obstacle():
             return
         world = gfw.top().world
         world.append(demon)

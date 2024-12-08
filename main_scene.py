@@ -4,7 +4,7 @@ from enemy import Demon, DemonGen
 from player import Knight
 
 
-world = gfw.World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
+world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller'])
 
 canvas_width = 1152  # 1280
 ㅁ = 648  # 720
@@ -38,7 +38,7 @@ def enter():
     Knight = Knight(knight_info, world.bg)
     world.append(Knight, world.layer.player)
     world.append(Knight.weapon, world.layer.weapon)
-
+    
     k = load_image(f'res/gun/AK47_Sprite.png')
     print(k.h)
 
