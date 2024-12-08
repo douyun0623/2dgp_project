@@ -31,11 +31,11 @@ types = {
 
 # 구역 정보 (좌표 범위 및 상태)
 zones = {
-    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 5},
-    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
-    'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
-    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
-    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 1},
+    'zone1': {'range': ((1632, 1110), (2369, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 3},
+    'zone2': {'range': ((131, 1110), (919, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 4},
+    'zone3': {'range': ((3034, 1111), (3868, 1824)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 4},
+    'zone4': {'range': ((1630, 2511), (2368, 3222)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 5},
+    'zone5': {'range': ((3031, 2510), (3865, 3224)), 'status': IS_STAGE_ENTERING, 'enemey_count' : 5},
     'zone6': {'range': ((3380, 3756), (3524, 3790)), 'status': IS_PORTAL, 'enemey_count' : 0}
 }
 
@@ -346,8 +346,8 @@ class Knight(SheetSprite):
 
         # hp
         canvas_height = get_canvas_height()
-        self.gauge.draw(90, canvas_height - 17, 100, self.life / self.max_life) 
-        self.roll_gauge.draw(90, canvas_height - 25, 100, max(0, Knight.ROLL_COOLDOWN - (time.time() - self.last_roll_time))  / Knight.ROLL_COOLDOWN)
+        self.gauge.draw(90, canvas_height - 17, 100, max(self.life, 0.05) / self.max_life) 
+        self.roll_gauge.draw(90, canvas_height - 25, 100, max(0.05, Knight.ROLL_COOLDOWN - (time.time() - self.last_roll_time))  / Knight.ROLL_COOLDOWN)
 
         # 좌표 출력
         # print(f"World Position: (x: {self.x}, y: {self.y})")

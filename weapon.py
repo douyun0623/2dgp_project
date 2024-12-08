@@ -135,7 +135,7 @@ class Weapon(AnimSprite):
         return False
 
 class AK47(Weapon):
-    COOL_TIME = 0.5
+    COOL_TIME = 0.3
 
     def __init__(self, player):
         super().__init__(player, f'res/gun/AK47_Bullet.png', power=30, speed=400, bullet_count=3, bullet_mag = 3, fps = 20, sprite_img=f'res/gun/AK47_Sprite.png', frame_count=12)
@@ -175,7 +175,7 @@ class Bazooka(Weapon):
             return self.x - 35, self.y + 10
 
 class MP5(Weapon):
-    COOL_TIME = 0.1
+    COOL_TIME = 0.2
 
     def __init__(self, player):
         super().__init__(player, f'res/gun/MP5_Bullet.png', power=10, speed=400, bullet_count=5 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/MP5_Sprite.png', frame_count=12)
@@ -216,7 +216,7 @@ class Revolver(Weapon):
 
 
 class Glock(Weapon):
-    COOL_TIME = 0.1
+    COOL_TIME = 0.2
 
     def __init__(self, player):
         super().__init__(player, f'res/gun/Glock_Bullet.png', power=5, speed=300, bullet_count=12 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Glock_Sprite.png', frame_count=12)

@@ -8,8 +8,8 @@ world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller'])
 
 canvas_width = 1152  # 1280
 ㅁ = 648  # 720
-shows_bounding_box = True
-shows_object_count = True
+shows_bounding_box = False
+shows_object_count = False
 
 knight_info = {
     "id": "1",

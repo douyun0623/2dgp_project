@@ -21,15 +21,20 @@ class Demon(AnimSprite):
         self.is_remove = False
         self.is_attack = False
         self.mag = 2  # 이미지 크기를 배 확대
+
         self.max_life = self.info.life
         self.life = self.max_life
         self.gauge = Gauge(f'res/gauge_fg.png', 'res/gauge_bg.png')
+
         self.stun_timer = 0
         self.score = self.info.score
         self.is_dead = False  # 죽음 상태 추가
         self.attack_chosen = False  # 공격 선택 여부를 추적하는 변수 추가
         self.dead_timer = 0.0  # 사라지기까지 대기 시간
 
+        self.is_aggressive = False  # 공격받은 상태 여부
+        self.aggression_timer = 0  # 공격 상태 지속 시간
+        self.aggression_duration = 5  # 공격 상태 유지 시간 (초)
 
         world = gfw.top().world
         self.player = world.objects_at(world.layer.player)   # 플레이어의 위치 가져옴
@@ -41,7 +46,7 @@ class Demon(AnimSprite):
             self.x += self.waver_x * gfw.frame_time
             self.y += self.waver_y * gfw.frame_time
         else:
-            self.set_anim('idle')
+            self.set_anim('move')
         return True
 
     def is_stunned(self):
@@ -49,6 +54,10 @@ class Demon(AnimSprite):
 
     def hit(self, damage):  # return True if dead
         self.life -= damage  # 항상 데미지를 감소시킴
+
+        self.is_aggressive = True
+        self.aggression_timer = self.aggression_duration  # 공격 상태 유지 시간 설정
+
         if self.life <= 0: 
             self.state = 'dead'
             self.is_dead = True
@@ -106,24 +115,37 @@ class Demon(AnimSprite):
                     gfw.change(game_end_scene)
             return
 
+        # 공격 상태 지속 시간 감소
+        if self.is_aggressive:
+            self.aggression_timer -= gfw.frame_time
+            if self.aggression_timer <= 0:
+                self.is_aggressive = False  # 시간이 지나면 평상 상태로 전환
+
         world = gfw.top().world
         player = world.object_at(world.layer.player, 0)
         diff_x, diff_y = player.x - self.x, player.y - 70 - self.y
         dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
 
-        if dist >= self.info.attackRange and self.is_attack == False:
+        approach_range = 350  # 따라가기 시작하는 거리
+
+        if dist >= approach_range and self.type != 1 and not self.is_aggressive:
+            # 일정 거리 밖에서는 idle 상태로 대기 (공격받지 않았을 경우)
             self.set_anim('idle')
-            dx = self.speed * diff_x / dist * gfw.frame_time
-            self.x += dx
-            self.y += self.speed * diff_y / dist * gfw.frame_time
-            self.flip = 'h' if dx > 0 else ''
         else:
-            self.is_attack = True
-            self.attack()
+            # 공격받았거나 플레이어와 가까울 경우 추적
+            if dist >= self.info.attackRange and self.is_attack == False:
+                self.set_anim('move')
+                dx = self.speed * diff_x / dist * gfw.frame_time
+                self.x += dx
+                self.y += self.speed * diff_y / dist * gfw.frame_time
+                self.flip = 'h' if dx > 0 else ''
+            else:
+                self.is_attack = True
+                self.attack()
 
         # 공격하는 상태의 마지막 프레임 일때, 플레이어 위치와와 enemy의 위체에서 공격사거리와 겹치면 플에이어에게 데미지를 주고 싶다.
         if self.state in ['attack', 'attack2'] and self.get_anim_index() == self.info.frame_info['attack']['frames'] - 1:  # 공격하는 상태에고, 
-            self.set_anim('idle')
+            self.set_anim('move')
             self.is_attack = False
             self.attack_chosen = False  # 공격 후 공격 선택을 다시 할 수 있도록 리셋
             if dist <= self.info.attackRange:   
@@ -220,16 +242,17 @@ INFO = [
         clazz=Demon,
         file='res/monster/crimson_wolf.png',
         frame_info={
-            'idle': {'frames': 4, 'start_pos': (0, 1197 - 72 * 2), 'frame_size': (72, 72)},   # 
+            'idle': {'frames': 1, 'start_pos': (0, 1197 - 72 * 2), 'frame_size': (72, 72)},
+            'move': {'frames': 4, 'start_pos': (0, 1197 - 72 * 2), 'frame_size': (72, 72)},   # 
             'attack': {'frames': 5, 'start_pos': (0, 1197 - 609), 'frame_size': (72, 73)},  # 
             'stunned': {'frames': 8, 'start_pos': (0, 1197 - 536), 'frame_size': (74, 73)},  # 한대 맞았을때
             'dead': {'frames': 3, 'start_pos': (0, 1197 - 650), 'frame_size': (72, 41)}  # 사망시 이미지
         },
-        speed=(150, 170),
+        speed=(130, 150),
         attackDamage=2,
         attackRange=80,
         bbox=(-15, -15, 15, 15),
-        life=130,
+        life=80,
         score=10,
     ),
 
@@ -238,7 +261,8 @@ INFO = [
         clazz=Demon,
         file='res/monster/night_wing.png',
         frame_info={
-            'idle': {'frames': 10, 'start_pos': (0, 1773 - 151), 'frame_size': (73, 79)},
+            'idle': {'frames': 1, 'start_pos': (0, 1773 - 151), 'frame_size': (73, 79)},
+            'move': {'frames': 10, 'start_pos': (0, 1773 - 151), 'frame_size': (73, 79)},
             'attack': {'frames': 15, 'start_pos': (0, 1773 - 1166), 'frame_size': (82, 106)},
             'stunned': {'frames': 8, 'start_pos': (0, 1773 - 752), 'frame_size': (74, 74)},
             'dead': {'frames': 5, 'start_pos': (0, 1773 - 914), 'frame_size': (85, 89)}  # 사망시 이미지
@@ -247,7 +271,7 @@ INFO = [
         attackDamage=3,
         attackRange=80,
         bbox=(-28, -5, 8, 31),
-        life=150,
+        life=110,
         score=50,
     ),
 
@@ -256,16 +280,17 @@ INFO = [
         clazz=Demon,
         file='res/monster/red_orc_warrior.png',
         frame_info={
-            'idle': {'frames': 6, 'start_pos': (0, 1245 - 223), 'frame_size': (72, 74)},
-            'attack': {'frames': 4, 'start_pos': (0, 1245 - 648), 'frame_size': (103, 89)},
+            'idle': {'frames': 1, 'start_pos': (0, 1245 - 233), 'frame_size': (72, 74)},
+            'move': {'frames': 6, 'start_pos': (0, 1245 - 233), 'frame_size': (72, 74)},
+            'attack': {'frames': 8, 'start_pos': (0, 1245 - 648), 'frame_size': (103, 89)},
             'stunned': {'frames': 5, 'start_pos': (0, 1245 - 314), 'frame_size': (78, 73)},
             'dead': {'frames': 12, 'start_pos': (0, 1245 - 559), 'frame_size': (78, 98)}  # 사망시 이미지
         },
-        speed=(130, 140),
+        speed=(120, 130),
         attackDamage=4,
         attackRange=70,
         bbox=(-25, -14, 25, 14),
-        life=300,
+        life=200,
         score=30,
     ),
 
@@ -275,12 +300,13 @@ INFO = [
         file='res/monster/black_dragon.png',
         frame_info={
             'idle': {'frames': 6, 'start_pos': (0, 1857 - 216), 'frame_size': (140, 113)},
+            'move': {'frames': 6, 'start_pos': (0, 1857 - 216), 'frame_size': (140, 113)},
             'attack2': {'frames': 12, 'start_pos': (0, 1857 - 965), 'frame_size': (172, 146)},
             'stunned': {'frames': 15, 'start_pos': (0, 1857 - 444), 'frame_size': (138, 113)},
             'dead': {'frames': 10, 'start_pos': (0, 1857 - 688), 'frame_size': (145, 140)},  # 사망시 이미지
             'attack': {'frames': 12, 'start_pos': (0, 1857 - 1258), 'frame_size': (160, 141)}
         },
-        speed=(160, 200),
+        speed=(150, 180),
         attackDamage=4,
         attackRange=150,
         bbox=(-25, -14, 25, 14),

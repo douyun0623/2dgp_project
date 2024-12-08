@@ -10,9 +10,6 @@ transparent = True
 def enter():
     world.append(Background('res/scene_image/game_over.png'), 0)
 
-    global font
-    font = gfw.font.load('res/ENCR10B.TTF')
-
 def exit():
     world.clear()
 
@@ -22,8 +19,6 @@ def handle_event(e):
         return True
 
 def draw(): pass
-    # gfw.font.draw_centered_text(font, msg, center_x, center_y + 30, (63, 0, 0))
-
 def update(): pass
 
 if __name__ == '__main__':
