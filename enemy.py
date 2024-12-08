@@ -128,10 +128,10 @@ class Demon(AnimSprite):
             self.attack_chosen = False  # 공격 후 공격 선택을 다시 할 수 있도록 리셋
             if dist <= self.info.attackRange:   
                 if player.is_invincible:    # 무적
-                    print(f"플레이어 무적상태! 현재 HP: {player.hp}")
+                    print(f"플레이어 무적상태! 현재 HP: {player.life}")
                 else:   # 무적 x
-                    player.hp -= self.info.attackDamage
-                    print(f"플레이어 HP 감소! 현재 HP: {player.hp}")
+                    player.life -= self.info.attackDamage
+                    print(f"플레이어 HP 감소! 현재 HP: {player.life}")
 
     # 애니메이션 상태에 맞는 프레임을 설정하는 함수
     def set_anim(self, state):

@@ -148,7 +148,11 @@ class Knight(SheetSprite):
         super().__init__(f'res/knight_sheet.png', 80, 150, 8) #160, 500
         self.bg = bg
         self.running = True
-        self.hp = 10
+
+        # 체력 설정
+        self.max_life = 10
+        self.life = self.max_life
+
         self.mag = 0.6  # 크기 배율을 설정
         self.is_invincible = False
         self.time = 0
@@ -156,11 +160,17 @@ class Knight(SheetSprite):
         self.roll_dx, self.roll_dy = 0, 0  # 구르기 시 이동 방향
         self.key_state = {SDLK_w: False, SDLK_a: False, SDLK_s: False, SDLK_d: False}
 
+        # font
+        self.font = gfw.font.load('res/ENCR10B.TTF')
+
         # StatesManager: 애니메이션 관리
         self.state_manager = StatesManager(info["type"], info["size"])
 
         # ZoneManager: 구역 상태 관리
         self.zone_manager = ZoneManager(zones, bg)
+
+        # 게이지
+        self.gauge = Gauge(f'res/gauge_fg.png', 'res/gauge_bg.png')
 
         # 3380, 3756
         self.x = 2000  # 맵의 중앙에 캐릭터 위치
@@ -314,6 +324,13 @@ class Knight(SheetSprite):
         
         # 좌표를 배경의 스크린 좌표로 변환하여 사용
         screen_pos = self.bg.to_screen(self.x, self.y)
+
+        canvas_height = get_canvas_height()
+        gfw.font.draw_centered_text(self.font, 'hp', 20, canvas_height - 15, (63, 0, 0))
+
+        # hp
+        canvas_height = get_canvas_height()
+        self.gauge.draw(90, canvas_height - 17, 100, self.life / self.max_life) 
 
         # 좌표 출력
         # print(f"World Position: (x: {self.x}, y: {self.y})")

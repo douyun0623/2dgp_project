@@ -7,7 +7,7 @@ from player import Knight
 world = gfw.World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller']);
 
 canvas_width = 1152  # 1280
-canvas_height = 648  # 720
+ㅁ = 648  # 720
 shows_bounding_box = True
 shows_object_count = True
 
@@ -25,7 +25,7 @@ class CollisionChecker:
             Knight.weapon.try_hit(obj)
 
 def enter():
-    world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
+    # world.append(HorzFillBackground('res/navy_theme_background.png', 0), world.layer.bgi)
 
     world.bg = MapBackground('res/map/floor1.tmj', tilesize=50)
     world.bg.margin = 210
