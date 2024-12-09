@@ -106,13 +106,16 @@ class Demon(AnimSprite):
         if self.check_stun():
             return
 
+        world = gfw.top().world
         if self.is_dead:
             self.set_anim('dead')  # 죽음 상태 유지
             self.dead_timer -= gfw.frame_time
             if self.dead_timer <= 0:
                 self.is_remove = True
                 if(self.type == 3):
-                    gfw.change(game_end_scene)
+                    world.game_end = True
+                    # gfw.change(game_end_scene)
+
             return
 
         # 공격 상태 지속 시간 감소
@@ -121,7 +124,7 @@ class Demon(AnimSprite):
             if self.aggression_timer <= 0:
                 self.is_aggressive = False  # 시간이 지나면 평상 상태로 전환
 
-        world = gfw.top().world
+        # world = gfw.top().world
         player = world.object_at(world.layer.player, 0)
         diff_x, diff_y = player.x - self.x, player.y - 70 - self.y
         dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
@@ -310,7 +313,7 @@ INFO = [
         attackDamage=4,
         attackRange=150,
         bbox=(-25, -14, 25, 14),
-        life=2000,
+        life=100,
         score=30,
     ),
 ]
@@ -368,6 +371,7 @@ class DemonGen:
 class BossGen:
     def __init__(self):
         self.gen_boss()
+        self.zone = {'l' : 80, 'b' : 460, 'r' : 1417,'t' : 1173}
     def draw(self): pass
     def gen_boss(self):
         type = 3
@@ -377,5 +381,26 @@ class BossGen:
         if enemy.is_on_obstacle():
             return
         world = gfw.top().world
+        world.append(enemy, world.layer.enemy)
+    def update(self):
+        # if self.boss.is_remove:  # 보스가 제거되었는지 확인
+        #     print("보스가 제거되었습니다.")
+        #     self.boss = None
+        #     gfw.change(game_end_scene)  # 게임 종료 화면으로 전환
+
+
+
+        world = gfw.top().world
+        if world.game_end == True:
+            gfw.change(game_end_scene)
+            return
+
+        if world.count_at(world.layer.enemy) >= 3: return
+        # type = 0
+        type = random.randrange(0, 3)
+        x, y = position_within_bounds(self.zone)
+        info = INFO[type]
+        enemy = info.clazz(type, x, y)
+        if enemy.is_on_obstacle():
+            return
         world.append(enemy)
-    def update(self): pass

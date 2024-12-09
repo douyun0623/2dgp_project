@@ -19,6 +19,7 @@ class World:
                 index += 1
 
         self.objects = [[] for i in range(layer_count)]
+        self.game_end = False
 
     def change_map(self, new_map_name, new_bg_path):
         """맵을 변경하고 관련 데이터 초기화"""
@@ -39,10 +40,10 @@ class World:
     def remove(self, go, layer_index=None):
         if layer_index is None:
             layer_index = go.layer_index
-        # self.objects[layer_index].remove(go)
-
-        if go in self.objects[layer_index]:
-            self.objects[layer_index].remove(go)
+        if go not in self.objects[layer_index]:
+            print(f"[디버그] 제거 대상 객체가 해당 레이어({layer_index})에 없음: {go}")
+            return  # 이미 제거되었거나 레이어를 잘못 참조한 경우
+        self.objects[layer_index].remove(go)
             
     def clear(self):
         layer_count = len(self.objects)
@@ -51,9 +52,9 @@ class World:
         self.objects[layer_index] = []
     def update(self):
         for go in self.all_objects_reversed():
-            go.update()
             if hasattr(go, 'is_remove') and go.is_remove:
                 self.remove(go)
+            go.update()
     def draw(self):
         for go in self.all_objects():
             go.draw()
