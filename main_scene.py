@@ -7,7 +7,7 @@ from player import Knight
 world = World(['bgi', 'bg', 'enemy', 'player', 'weapon','controller'])
 
 canvas_width = 1152  # 1280
-ㅁ = 648  # 720
+canvas_hight = 648  # 720
 shows_bounding_box = False
 shows_object_count = False
 

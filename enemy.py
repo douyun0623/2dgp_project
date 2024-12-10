@@ -6,7 +6,7 @@ import game_end_scene
 # from map_helper import *
 
 class Demon(AnimSprite):
-    STUN_DURATION = 0.5
+    STUN_DURATION = 0.4
     STEP_BACK_TILL = STUN_DURATION - 0.2
     DEAD_DURATION = 1.0
     def __init__(self, type, x, y):

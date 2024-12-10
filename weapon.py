@@ -62,8 +62,8 @@ class Bullet(Sprite):
         return dead
 
     def splash_damage(self):
-        SPLASH_RADIUS = 250  # 스플래시 반경
-        SPLASH_DAMAGE = self.power * 0.3  # 스플래시 데미지 비율 (기본 데미지의 50%)
+        SPLASH_RADIUS = 200  # 스플래시 반경
+        SPLASH_DAMAGE = self.power * 0.2  # 스플래시 데미지 비율 (기본 데미지의 50%)
 
         world = gfw.top().world
         enemies = world.objects_at(world.layer.enemy)
@@ -180,7 +180,7 @@ class Bazooka(Weapon):
     COOL_TIME = 1.0
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=80, speed=200, bullet_count=1,bullet_mag = 2, fps = 25, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
+        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=50, speed=200, bullet_count=1,bullet_mag = 2, fps = 25, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
 
     def append_bullet(self, bullet_img):
         bullet = Bullet(self.player, bullet_img, self.power, self.speed, self.bullet_mag, True)
@@ -204,7 +204,7 @@ class MP5(Weapon):
     COOL_TIME = 0.2
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/MP5_Bullet.png', power=10, speed=400, bullet_count=5 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/MP5_Sprite.png', frame_count=12)
+        super().__init__(player, f'res/gun/MP5_Bullet.png', power=15, speed=400, bullet_count=5 ,bullet_mag = 3, fps = 20, sprite_img=f'res/gun/MP5_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:
@@ -245,7 +245,7 @@ class Glock(Weapon):
     COOL_TIME = 0.2
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Glock_Bullet.png', power=5, speed=300, bullet_count=12 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Glock_Sprite.png', frame_count=12)
+        super().__init__(player, f'res/gun/Glock_Bullet.png', power=10, speed=300, bullet_count=12 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Glock_Sprite.png', frame_count=12)
 
     def get_pos(self):
         if self.player.flip:
