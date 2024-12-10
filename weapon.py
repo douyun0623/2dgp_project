@@ -3,13 +3,14 @@ from gfw import *
 import time
 
 class Bullet(Sprite):
-    def __init__(self, player, fg_fname, power, speed, mag):
+    def __init__(self, player, fg_fname, power, speed, mag, is_splash_damage = False):
         super().__init__(fg_fname, -100, -100)
         self.player = player
         self.power = power
         self.speed = speed  # 총알 속도
         self.mag = mag  # 크기 배율을 설정
         self.angle = 0
+        self.is_splash_damage = is_splash_damage
         self.dx, self.dy = 0, 0
         self.reset()
     def reset(self):
@@ -53,8 +54,29 @@ class Bullet(Sprite):
 
         dead = obj.hit(self.power)
 
+        # 바주카포라면 스플래시 데미지 추가
+        if self.is_splash_damage:  # 바주카 총알인지 확인
+            self.splash_damage()
+
         self.reset()
         return dead
+
+    def splash_damage(self):
+        SPLASH_RADIUS = 250  # 스플래시 반경
+        SPLASH_DAMAGE = self.power * 0.3  # 스플래시 데미지 비율 (기본 데미지의 50%)
+
+        world = gfw.top().world
+        enemies = world.objects_at(world.layer.enemy)
+
+        for enemy in enemies:
+            if enemy.state == 'dead':
+                continue
+
+            # 거리 계산
+            dist = math.sqrt((self.x - enemy.x) ** 2 + (self.y - enemy.y) ** 2)
+            if dist <= SPLASH_RADIUS:  # 스플래시 반경 내에 있으면 데미지 적용
+                enemy.hit(SPLASH_DAMAGE)
+
     def get_bb(self):
         r = 12 # radius
         return self.x-r, self.y-r, self.x+r, self.y+r
@@ -158,7 +180,11 @@ class Bazooka(Weapon):
     COOL_TIME = 1.0
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=100, speed=200, bullet_count=1,bullet_mag = 2, fps = 25, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
+        super().__init__(player, f'res/gun/Bazooka_Bullet.png', power=80, speed=200, bullet_count=1,bullet_mag = 2, fps = 25, sprite_img=f'res/gun/Bazooka_Sprite.png', frame_count=8)
+
+    def append_bullet(self, bullet_img):
+        bullet = Bullet(self.player, bullet_img, self.power, self.speed, self.bullet_mag, True)
+        self.bullets.append(bullet)
 
     def get_pos(self):
         if self.player.flip:
@@ -198,7 +224,7 @@ class Revolver(Weapon):
     COOL_TIME = 0.7
 
     def __init__(self, player):
-        super().__init__(player, f'res/gun/Revolver_Bullet.png', power=60, speed=400, bullet_count=6 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Revolver_Sprite.png', frame_count=10)
+        super().__init__(player, f'res/gun/Revolver_Bullet.png', power=45, speed=400, bullet_count=6 ,bullet_mag = 3, fps = 30, sprite_img=f'res/gun/Revolver_Sprite.png', frame_count=10)
 
     def get_pos(self):
         if self.player.flip:

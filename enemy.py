@@ -6,7 +6,7 @@ import game_end_scene
 # from map_helper import *
 
 class Demon(AnimSprite):
-    STUN_DURATION = 1.0
+    STUN_DURATION = 0.5
     STEP_BACK_TILL = STUN_DURATION - 0.2
     DEAD_DURATION = 1.0
     def __init__(self, type, x, y):
@@ -66,7 +66,7 @@ class Demon(AnimSprite):
             return True
 
         # 스턴 상태가 아닐 경우에만 추가로 스턴 처리
-        if self.stun_timer <= 0:
+        if self.stun_timer <= 0 and self.state not in ['attack', 'attack2']:
             self.set_anim('stunned')
             self.stun_timer = self.STUN_DURATION
 
@@ -129,7 +129,9 @@ class Demon(AnimSprite):
         diff_x, diff_y = player.x - self.x, player.y - 70 - self.y
         dist = math.sqrt(diff_x ** 2 + diff_y ** 2)
 
-        approach_range = 350  # 따라가기 시작하는 거리
+        approach_range = 400  # 따라가기 시작하는 거리
+        if self.type == 3:
+            approach_range = 1000  # 따라가기 시작하는 거리
 
         if dist >= approach_range and self.type != 1 and not self.is_aggressive:
             # 일정 거리 밖에서는 idle 상태로 대기 (공격받지 않았을 경우)
@@ -255,7 +257,7 @@ INFO = [
         attackDamage=2,
         attackRange=80,
         bbox=(-15, -15, 15, 15),
-        life=80,
+        life=100,
         score=10,
     ),
 
@@ -274,7 +276,7 @@ INFO = [
         attackDamage=3,
         attackRange=80,
         bbox=(-28, -5, 8, 31),
-        life=110,
+        life=120,
         score=50,
     ),
 
@@ -313,7 +315,7 @@ INFO = [
         attackDamage=4,
         attackRange=150,
         bbox=(-25, -14, 25, 14),
-        life=100,
+        life=1500,
         score=30,
     ),
 ]
@@ -383,19 +385,12 @@ class BossGen:
         world = gfw.top().world
         world.append(enemy, world.layer.enemy)
     def update(self):
-        # if self.boss.is_remove:  # 보스가 제거되었는지 확인
-        #     print("보스가 제거되었습니다.")
-        #     self.boss = None
-        #     gfw.change(game_end_scene)  # 게임 종료 화면으로 전환
-
-
-
         world = gfw.top().world
         if world.game_end == True:
             gfw.change(game_end_scene)
             return
 
-        if world.count_at(world.layer.enemy) >= 3: return
+        if world.count_at(world.layer.enemy) >= 6: return
         # type = 0
         type = random.randrange(0, 3)
         x, y = position_within_bounds(self.zone)
