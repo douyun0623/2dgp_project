@@ -35,7 +35,7 @@ def enter():
     world.append(world.bg, world.layer.bg)
     
     global Knight
-    Knight = Knight(knight_info, world.bg)
+    Knight = Knight(knight_info)
     world.append(Knight, world.layer.player)
     world.append(Knight.weapon, world.layer.weapon)
 

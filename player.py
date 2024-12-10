@@ -146,9 +146,10 @@ class Knight(SheetSprite):
     MOVE_SPEED = 200  # 이동 속도 (픽셀/초)
     ROLL_SPEED = 400  # 구르기 시 이동 속도 (픽셀/초)
     ROLL_COOLDOWN = 1.0  # 구르기 쿨타임 (초)
-    def __init__(self, info, bg):
+    def __init__(self, info):
         super().__init__(f'res/knight_sheet.png', 80, 150, 8) #160, 500
-        self.bg = bg
+        world = gfw.top().world
+        self.bg = world.bg
         self.running = True
 
         # 체력 설정
@@ -169,7 +170,7 @@ class Knight(SheetSprite):
         self.state_manager = StatesManager(info["type"], info["size"])
 
         # ZoneManager: 구역 상태 관리
-        self.zone_manager = ZoneManager(zones, bg)
+        self.zone_manager = ZoneManager(zones, self.bg)
 
         # 게이지
         self.gauge = Gauge(f'res/gauge_fg.png', 'res/gauge_bg.png')
@@ -357,14 +358,3 @@ class Knight(SheetSprite):
         flip_scale = -1 if self.flip else 1
 
         self.image.clip_composite_draw(l + 1, b + 2, w - 2, h - 2, 0, 'h', *screen_pos, self.mag * w * flip_scale, self.mag * h)   
-
-if __name__ == '__main__':
-    open_canvas()
-    knight_info = {
-        "id": "1",
-        "name": "Bandit Knight",
-        "type": "15x8",  # The type to use for this knight
-        "size": 366
-    }
-    knight = Knight(knight_info)
-    close_canvas()
