@@ -172,7 +172,7 @@ Pico2D를 사용하여 2D 게임의 기본적인 루프를 구성하고, 캐릭�
   + YouTube link  <https://youtu.be/Vemle5hC8tE>
 
 + 3차 발표 영상
-  + YouTube link  <>
+  + YouTube link  <https://youtu.be/3M9t-WsySFA>
 
 
 
